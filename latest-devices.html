@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Latest Devices — HOODBTC Shop</title>
+  <meta name="description" content="Shop Latest Devices at the HOODBTC Shop. The newest DePIN devices across the shop, in one place.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta name="theme-color" content="#020607">
+  <link rel="canonical" href="https://shop.hoodbtc.com/latest-devices.html">
+  <meta property="og:title" content="Latest Devices — HOODBTC Shop">
+  <meta property="og:description" content="Shop Latest Devices at the HOODBTC Shop. The newest DePIN devices across the shop, in one place.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="HOODBTC Shop">
+  <meta property="og:url" content="https://shop.hoodbtc.com/latest-devices.html">
+  <meta property="og:image" content="https://shop.hoodbtc.com/og-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Latest Devices — HOODBTC Shop">
+  <meta name="twitter:description" content="Shop Latest Devices at the HOODBTC Shop. The newest DePIN devices across the shop, in one place.">
+  <meta name="twitter:image" content="https://shop.hoodbtc.com/og-card.png">
+  <link rel="icon" type="image/webp" href="assets/hoodbtc-h.webp">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Living water: same file and same no-controls rule as every HOODBTC product.
+       Autoplay + muted + loop + playsinline; it never stops while the page is visible. -->
+  <video id="night-water-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+    <source src="assets/hoodbtc-water-loop.mp4" type="video/mp4">
+  </video>
+  <div class="water-shade" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html" aria-label="HOODBTC Shop — home">
+        <img class="brand-glyph" src="assets/hoodbtc-h.webp" alt="HOODBTC">
+        <span class="brand-text">
+          <span class="brand-name">HOODBTC</span>
+          <span class="brand-sub">SHOP</span>
+        </span>
+      </a>
+      <nav class="links" aria-label="Primary">
+        <a href="latest-devices.html">Latest Devices</a>
+        <a href="vehicle-auto.html">Vehicle &amp; Auto</a>
+        <a href="connectivity.html">Connectivity &amp; eSIM</a>
+        <a href="hotspots.html">Hotspots</a>
+      </nav>
+      <a class="cart-link" href="cart.html" aria-label="Cart">Cart <span class="cart-count" data-cart-count>0</span></a>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-head">
+      <p class="kicker">Collection</p>
+      <h1>Latest Devices</h1>
+      <p class="page-sub">The newest DePIN devices across the shop, in one place.</p>
+    </section>
+    <section class="section">
+      <!-- Grid is rendered by shop.js from products.js (collection: latest-devices) -->
+      <div id="product-grid" class="product-grid" data-collection="latest-devices"></div>
+      <div id="empty-state" class="glass empty-state" hidden>
+        <h2>Coming soon</h2>
+        <p>Nothing here yet — this collection is being stocked. Check back at launch.</p>
+        <a class="text-link" href="index.html">&larr; All collections</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img class="brand-glyph small" src="assets/hoodbtc-h.webp" alt="HOODBTC">
+        <div>
+          <p class="footer-name">HOODBTC SHOP</p>
+          <p class="footer-note">Part of the HOODBTC ecosystem. Build. Trade. Own.</p>
+        </div>
+      </div>
+      <nav class="footer-links" aria-label="HOODBTC ecosystem">
+        <a href="https://hoodbtc.com">HOODBTC</a>
+        <a href="https://trade.hoodbtc.com">Trade</a>
+        <a href="https://tokenfactory.hoodbtc.com">Token Factory</a>
+        <a href="https://games.hoodbtc.com">Games</a>
+      </nav>
+      <nav class="footer-links" aria-label="Shop policies">
+        <a href="terms.html">Terms</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="shipping.html">Shipping</a>
+        <a href="returns.html">Returns</a>
+      </nav>
+      <p class="footer-contact">Questions about an order? <a href="mailto:contact@hoodbtc.com">contact@hoodbtc.com</a></p>
+      <p class="footer-legal">&copy; HOODBTC. All prices in USD. Shipping calculated at checkout.</p>
+    </div>
+  </footer>
+  <script src="products.js"></script>
+  <script src="shop.js"></script>
+</body>
+</html>
