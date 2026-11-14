@@ -1,9 +1,10 @@
 /* ============================================================
    HOODBTC Shop — storefront logic
    Catalog rendering (from products.js), product detail page,
-   and a client-side cart in localStorage. No backend yet:
-   checkout wiring is a later step and the checkout button
-   stays disabled ("Checkout opens at launch") until then.
+   and a client-side cart in localStorage. Ordering is manual:
+   the cart page carries a Netlify Forms order form — no payment
+   is taken on the site. Peter confirms availability and
+   shipping, then sends payment details (crypto / Interac).
    ============================================================ */
 (function () {
   "use strict";
@@ -129,8 +130,41 @@
     });
   }
 
+  /* ---------- Order form (Netlify Forms) ---------- */
+  function handleOrderSuccess() {
+    var params = new URLSearchParams(location.search);
+    if (params.get("ordered") !== "1") return;
+    try { localStorage.removeItem(CART_KEY); } catch (e) {}
+    var box = document.getElementById("cart-items");
+    if (box) box.innerHTML = "";
+    var empty = document.getElementById("cart-empty");
+    if (empty) empty.hidden = true;
+    var summary = document.getElementById("cart-summary");
+    if (summary) summary.hidden = true;
+    var ok = document.getElementById("order-success");
+    if (ok) ok.hidden = false;
+    renderCartCount([]);
+  }
+  function wireOrderForm() {
+    var form = document.getElementById("order-form");
+    if (!form) return;
+    form.addEventListener("submit", function () {
+      var cart = loadCart().filter(function (i) { return byId[i.id]; });
+      var lines = cart.map(function (i) {
+        var p = byId[i.id];
+        return i.qty + " x " + p.name + " (" + i.variant + ") — " + money(p.price * i.qty);
+      });
+      var subtotal = cart.reduce(function (s, i) { return s + byId[i.id].price * i.qty; }, 0);
+      lines.push("Subtotal: " + money(subtotal) + " (shipping confirmed before payment)");
+      var field = document.getElementById("order-lines");
+      if (field) field.value = lines.join("\n");
+    });
+  }
+
   renderCartCount();
   renderGrid();
   renderProduct();
   renderCartPage();
+  wireOrderForm();
+  handleOrderSuccess();
 })();
