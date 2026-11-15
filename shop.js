@@ -42,6 +42,29 @@
     saveCart(cart);
   }
 
+  /* ---------- Mobile collection nav (phones only; CSS hides it on desktop) ---------- */
+  function renderMobileNav() {
+    var header = document.querySelector("header.topbar");
+    if (!header || document.querySelector(".mobile-nav")) return;
+    var links = [
+      ["index.html", "Home"],
+      ["latest-devices.html", "Latest Devices"],
+      ["vehicle-auto.html", "Vehicle & Auto"],
+      ["connectivity.html", "Connectivity & eSIM"],
+      ["hotspots.html", "Hotspots"],
+      ["weather.html", "Weather"],
+      ["location.html", "Location"],
+      ["wallets-security.html", "Wallets & Security"]
+    ];
+    var nav = document.createElement("nav");
+    nav.className = "mobile-nav";
+    nav.setAttribute("aria-label", "Collections");
+    nav.innerHTML = links.map(function (l) {
+      return '<a href="' + l[0] + '">' + l[1] + "</a>";
+    }).join("");
+    header.insertAdjacentElement("afterend", nav);
+  }
+
   /* ---------- Collection grids ---------- */
   function productsFor(slug) {
     if (slug === "latest-devices") return products.filter(function (p) { return p.drop; });
@@ -73,6 +96,20 @@
       return;
     }
     document.title = p.name + " — HOODBTC Shop";
+    var desc = p.description || "";
+    var pageUrl = "https://shop-hoodbtc.netlify.app/product.html?id=" + encodeURIComponent(p.id);
+    var setMeta = function (selector, value) {
+      var el = document.querySelector(selector);
+      if (el) el.setAttribute("content", value);
+    };
+    setMeta('meta[name="description"]', desc);
+    setMeta('meta[property="og:title"]', p.name + " — HOODBTC Shop");
+    setMeta('meta[property="og:description"]', desc);
+    setMeta('meta[name="twitter:title"]', p.name + " — HOODBTC Shop");
+    setMeta('meta[name="twitter:description"]', desc);
+    setMeta('meta[property="og:url"]', pageUrl);
+    var canon = document.querySelector('link[rel="canonical"]');
+    if (canon) canon.setAttribute("href", pageUrl);
     document.getElementById("p-image").src = p.image;
     document.getElementById("p-image").alt = p.name;
     var col = (typeof HOODBTC_COLLECTIONS !== "undefined")
@@ -162,6 +199,7 @@
   }
 
   renderCartCount();
+  renderMobileNav();
   renderGrid();
   renderProduct();
   renderCartPage();

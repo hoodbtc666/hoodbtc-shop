@@ -151,8 +151,8 @@ main { flex: 1; width: 100%; }
 /* ---------- Product detail ---------- */
 
 .product-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
-.product-media { aspect-ratio: 3/2; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.product-media img { width: 100%; height: 100%; object-fit: contain; }
+.product-media { display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.product-media img { width: 100%; height: auto; display: block; }
 .product-info h1 { font-family: var(--serif); font-size: 42px; font-weight: 600; line-height: 1.1; }
 .price { font-size: 24px; font-weight: 700; color: var(--green2); margin: 10px 0; }
 .product-desc { color: var(--muted); margin-bottom: 20px; }
@@ -207,6 +207,26 @@ main { flex: 1; width: 100%; }
 .policy .updated { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; }
 
 /* ---------- Responsive ---------- */
+
+/* ---------- Mobile collection nav (phones only) ---------- */
+
+.mobile-nav { display: none; }
+@media (max-width: 760px) {
+  .mobile-nav {
+    display: flex; gap: 6px; overflow-x: auto;
+    padding: 10px 16px; position: relative; z-index: 1;
+    background: rgba(2, 6, 7, 0.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .mobile-nav::-webkit-scrollbar { display: none; }
+  .mobile-nav a {
+    flex: 0 0 auto; color: #c9d2c8; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
+    padding: 6px 11px; border: 1px solid var(--line); border-radius: 999px;
+  }
+  .mobile-nav a:hover { color: var(--green2); border-color: rgba(111, 242, 164, 0.45); }
+}
 
 @media (max-width: 760px) {
   .links { display: none; }
