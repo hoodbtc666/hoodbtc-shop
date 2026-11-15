@@ -119,8 +119,11 @@
     document.getElementById("p-price").textContent = money(p.price);
     document.getElementById("p-desc").textContent = p.description || "";
     var sel = document.getElementById("p-variant");
-    sel.innerHTML = (p.variants && p.variants.length ? p.variants : ["Standard"])
-      .map(function (v) { return "<option>" + v + "</option>"; }).join("");
+    var variants = (p.variants && p.variants.length ? p.variants : ["Standard"]);
+    sel.innerHTML = variants.map(function (v) { return "<option>" + v + "</option>"; }).join("");
+    if (variants.length === 1 && variants[0] === "Standard") {
+      sel.closest("label").hidden = true;
+    }
     document.getElementById("p-add").addEventListener("click", function () {
       var qty = Math.max(1, Math.min(99, parseInt(document.getElementById("p-qty").value, 10) || 1));
       addToCart(p.id, sel.value, qty);
@@ -144,7 +147,7 @@
       return '<div class="cart-item glass">' +
         '<img src="' + p.image + '" alt="' + p.name + '">' +
         '<div><p class="ci-name">' + p.name + '</p>' +
-        '<p class="ci-variant">' + i.variant + " · " + money(p.price) + '</p>' +
+        '<p class="ci-variant">' + (i.variant === "Standard" ? "" : i.variant + " · ") + money(p.price) + '</p>' +
         '<div class="ci-controls">' +
         '<button class="qty-btn" data-act="dec" data-idx="' + idx + '" aria-label="Decrease">−</button>' +
         '<span>' + i.qty + '</span>' +
@@ -189,7 +192,7 @@
       var cart = loadCart().filter(function (i) { return byId[i.id]; });
       var lines = cart.map(function (i) {
         var p = byId[i.id];
-        return i.qty + " x " + p.name + " (" + i.variant + ") — " + money(p.price * i.qty);
+        return i.qty + " x " + p.name + (i.variant === "Standard" ? "" : " (" + i.variant + ")") + " — " + money(p.price * i.qty);
       });
       var subtotal = cart.reduce(function (s, i) { return s + byId[i.id].price * i.qty; }, 0);
       lines.push("Subtotal: " + money(subtotal) + " (shipping confirmed before payment)");
