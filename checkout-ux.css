@@ -20,3 +20,5 @@
 .product-explained .product-disclaimer{margin-top:14px;font-size:13px;color:var(--muted);line-height:1.55}
 #demo-complete{max-width:780px;margin:20px auto;padding:30px 22px;text-align:center}
 #demo-complete .checkout-actions{justify-content:center}
+
+.product-buy-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}.product-buy-actions button{width:100%;min-height:52px;touch-action:manipulation;font-weight:700}.product-buy-actions .checkout-secondary{border-color:var(--green);background:rgba(0,0,0,.55)}.product-info .sum-note{margin-top:10px;line-height:1.5}@media(max-width:420px){.product-buy-actions{gap:8px}.product-buy-actions button{font-size:14px;padding:12px 9px}}
