@@ -30,16 +30,18 @@
   var summary = document.getElementById("cart-summary");
   var delivery = document.getElementById("delivery-step");
   var wallet = document.getElementById("wallet-step");
+  var complete = document.getElementById("demo-complete");
   var step = 1;
   function goTo(next) {
     step = next;
     if (cartItems) cartItems.hidden = next !== 1;
     if (cartActions) cartActions.hidden = next !== 1;
-    if (summary) summary.hidden = next === 1;
+    if (summary) summary.hidden = next === 1 || next === 4;
+    if (complete) complete.hidden = next !== 4;
     if (delivery) delivery.hidden = next !== 2;
     if (wallet) wallet.hidden = next !== 3;
     document.querySelectorAll("[data-step-label]").forEach(function (el) {
-      el.classList.toggle("active", Number(el.getAttribute("data-step-label")) === next);
+      el.classList.toggle("active", Number(el.getAttribute("data-step-label")) === next || (next === 4 && el.getAttribute("data-step-label") === "3"));
     });
     var head = document.querySelector(".page-head");
     if (head) head.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -62,6 +64,16 @@
     goTo(3);
   });
   bind("back-delivery", function () { goTo(2); });
+  bind("complete-demo", function () {
+    var required = Array.from(delivery.querySelectorAll("[required]"));
+    var invalid = required.find(function (input) { return !input.checkValidity(); });
+    if (invalid) { goTo(2); invalid.reportValidity(); return; }
+    var total = document.getElementById("sum-total");
+    var output = document.getElementById("demo-items-summary");
+    if (output) output.textContent = "Items subtotal: " + (total ? total.textContent : "not available") + " USD. Shipping and taxes not included.";
+    goTo(4);
+  });
+  bind("restart-demo", function () { goTo(3); });
   function syncCartAvailability() {
     var hasItems = !!(cartItems && cartItems.querySelector(".cart-item"));
     if (cartActions) cartActions.hidden = !hasItems;
