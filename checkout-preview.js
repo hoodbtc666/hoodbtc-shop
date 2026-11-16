@@ -62,7 +62,18 @@
     goTo(3);
   });
   bind("back-delivery", function () { goTo(2); });
+  function syncCartAvailability() {
+    var hasItems = !!(cartItems && cartItems.querySelector(".cart-item"));
+    if (cartActions) cartActions.hidden = !hasItems;
+    var next = document.getElementById("next-cart");
+    if (next) next.disabled = !hasItems;
+    if (!hasItems && step !== 1) goTo(1);
+  }
   goTo(1);
+  syncCartAvailability();
+  if (cartItems && window.MutationObserver) {
+    new MutationObserver(syncCartAvailability).observe(cartItems, { childList: true, subtree: true });
+  }
   var form = document.getElementById("preview-form");
   if (form) form.addEventListener("submit", function (event) { event.preventDefault(); });
 })();
