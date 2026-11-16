@@ -124,7 +124,27 @@
     document.getElementById("p-collection").textContent = col ? col.name : "";
     document.getElementById("p-name").textContent = p.name;
     document.getElementById("p-price").textContent = money(p.price);
-    document.getElementById("p-desc").textContent = p.description || "";
+    var descEl = document.getElementById("p-desc");
+    descEl.textContent = p.description || "";
+    // Make the existing product-specific explanation easier to scan on mobile.
+    // No added performance, availability or compatibility claims.
+    if (desc && !document.getElementById("product-explained")) {
+      var info = document.createElement("section");
+      info.id = "product-explained";
+      info.className = "product-explained glass";
+      var heading = document.createElement("h3");
+      heading.textContent = "What exactly is this?";
+      var explanation = document.createElement("p");
+      explanation.textContent = desc;
+      var reminder = document.createElement("p");
+      reminder.className = "product-disclaimer";
+      reminder.textContent = "Check device compatibility, network and regional requirements before ordering. Availability and final shipping costs are confirmed before payment.";
+      info.appendChild(heading);
+      info.appendChild(explanation);
+      info.appendChild(reminder);
+      descEl.insertAdjacentElement("afterend", info);
+      descEl.hidden = true;
+    }
     var sel = document.getElementById("p-variant");
     var variants = (p.variants && p.variants.length ? p.variants : ["Standard"]);
     sel.innerHTML = variants.map(function (v) { return "<option>" + v + "</option>"; }).join("");
