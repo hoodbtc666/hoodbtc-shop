@@ -128,14 +128,14 @@
     descEl.textContent = p.description || "";
     // Make the existing product-specific explanation easier to scan on mobile.
     // No added performance, availability or compatibility claims.
-    if (desc && !document.getElementById("product-explained")) {
+    if (p.description && descEl && !document.getElementById("product-explained")) {
       var info = document.createElement("section");
       info.id = "product-explained";
       info.className = "product-explained glass";
       var heading = document.createElement("h3");
       heading.textContent = "What exactly is this?";
       var explanation = document.createElement("p");
-      explanation.textContent = desc;
+      explanation.textContent = p.description;
       var reminder = document.createElement("p");
       reminder.className = "product-disclaimer";
       reminder.textContent = "Check device compatibility, network and regional requirements before ordering. Availability and final shipping costs are confirmed before payment.";
