@@ -151,10 +151,16 @@
     if (variants.length === 1 && variants[0] === "Standard") {
       sel.closest("label").hidden = true;
     }
-    document.getElementById("p-add").addEventListener("click", function () {
+    function addSelectedProduct() {
       var qty = Math.max(1, Math.min(99, parseInt(document.getElementById("p-qty").value, 10) || 1));
       addToCart(p.id, sel.value, qty);
       document.getElementById("p-added").hidden = false;
+    }
+    document.getElementById("p-add").addEventListener("click", addSelectedProduct);
+    var buyNow = document.getElementById("p-buy");
+    if (buyNow) buyNow.addEventListener("click", function () {
+      addSelectedProduct();
+      window.location.assign("checkout-preview.html");
     });
   }
 
