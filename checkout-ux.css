@@ -1,0 +1,12 @@
+/* Scoped preview-only checkout UX. Original site design and water stay untouched. */
+.checkout-progress{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:22px auto 0;max-width:780px;padding:0 16px}
+.checkout-progress span{padding:12px 8px;text-align:center;border:1px solid var(--line);border-radius:12px;background:rgba(2,6,7,.65);color:var(--muted);font-size:12px;font-weight:700}
+.checkout-progress span.active{border-color:var(--green);color:var(--green);background:rgba(53,232,127,.10)}
+.checkout-actions{display:flex;gap:12px;justify-content:flex-end;align-items:center;flex-wrap:wrap;margin:20px 0}
+.checkout-secondary{background:transparent;border:1px solid var(--line);border-radius:100px;padding:12px 18px;color:var(--text);font:inherit;cursor:pointer}
+.checkout-secondary:hover{border-color:var(--green)}
+#preview-form .field input,#preview-form .field select{min-height:44px}
+#preview-form .field input[readonly]{font-size:13px;overflow:hidden;text-overflow:ellipsis}
+#cart-summary{max-width:780px;width:100%;margin-inline:auto}
+#cart-items{width:100%}
+@media(max-width:650px){.checkout-progress{gap:5px;padding:0 12px}.checkout-progress span{font-size:10px;padding:10px 3px}.checkout-actions{flex-direction:column}.checkout-actions button{width:100%}#cart-summary{padding:20px 16px}}
