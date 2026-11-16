@@ -1,5 +1,5 @@
 /* Ensure native hidden state wins over flex/grid layout declarations. */
-.checkout-actions[hidden],#cart-items[hidden],#cart-summary[hidden],#delivery-step[hidden],#wallet-step[hidden],#cart-empty[hidden]{display:none!important}
+.checkout-actions[hidden],#cart-items[hidden],#cart-summary[hidden],#delivery-step[hidden],#wallet-step[hidden],#cart-empty[hidden],#demo-complete[hidden]{display:none!important}
 /* Scoped preview-only checkout UX. Original site design and water stay untouched. */
 .checkout-progress{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:22px auto 0;max-width:780px;padding:0 16px}
 .checkout-progress span{padding:12px 8px;text-align:center;border:1px solid var(--line);border-radius:12px;background:rgba(2,6,7,.65);color:var(--muted);font-size:12px;font-weight:700}
