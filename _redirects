@@ -1,0 +1,3 @@
+/checkout     /cart.html     302
+/checkout/    /cart.html     302
+/checkout.html /cart.html     302
