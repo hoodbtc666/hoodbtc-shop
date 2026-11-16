@@ -5,17 +5,37 @@
   var status = document.getElementById("wallet-status");
   var field = document.getElementById("payer-address");
   if (!button || !status || !field) return;
+  var discovered = [];
+  window.addEventListener("eip6963:announceProvider", function (event) {
+    var d = event.detail;
+    if (d && d.provider && d.info && !discovered.some(function (e) { return e.info.uuid === d.info.uuid; })) discovered.push(d);
+  });
+  window.dispatchEvent(new Event("eip6963:requestProvider"));
+  var walletPicker = document.getElementById("wallet-provider");
+  function getProvider() {
+    if (!walletPicker) return window.ethereum;
+    walletPicker.innerHTML = "";
+    discovered.forEach(function (d, i) {
+      var o = document.createElement("option"); o.value = String(i); o.textContent = d.info.name; walletPicker.appendChild(o);
+    });
+    if (window.ethereum) {
+      var o = document.createElement("option"); o.value = "default"; o.textContent = "Browser wallet"; walletPicker.appendChild(o);
+    }
+    walletPicker.hidden = walletPicker.options.length < 2;
+    return discovered.length ? discovered[0].provider : window.ethereum;
+  }
   button.addEventListener("click", async function () {
-    if (!window.ethereum || typeof window.ethereum.request !== "function") {
+    var provider = getProvider();
+    if (!provider || typeof provider.request !== "function") {
       status.textContent = "No compatible browser wallet detected. Open in a wallet browser or install a supported wallet.";
       return;
     }
     button.disabled = true;
     try {
-      var accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+      var accounts = await provider.request({ method: "eth_requestAccounts" });
       if (!Array.isArray(accounts) || !accounts[0] || !/^0x[a-fA-F0-9]{40}$/.test(accounts[0])) throw new Error("No valid address returned");
       field.value = accounts[0];
-      var chainId = await window.ethereum.request({ method: "eth_chainId" });
+      var chainId = await provider.request({ method: "eth_chainId" });
       status.textContent = chainId === "0x2105"
         ? "Connected on Base Mainnet. Payment remains disabled in preview."
         : "Wallet connected, but network is not Base Mainnet. Payment remains disabled.";
