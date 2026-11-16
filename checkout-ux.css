@@ -12,3 +12,11 @@
 #cart-summary{max-width:780px;width:100%;margin-inline:auto}
 #cart-items{width:100%}
 @media(max-width:650px){.checkout-progress{gap:5px;padding:0 12px}.checkout-progress span{font-size:10px;padding:10px 3px}.checkout-actions{flex-direction:column}.checkout-actions button{width:100%}#cart-summary{padding:20px 16px}}
+
+/* Product explanations: clear, readable, touch-friendly without changing brand. */
+.product-explained{padding:20px;margin:18px 0;border:1px solid var(--line);border-radius:16px}
+.product-explained h3{font-size:19px;line-height:1.35;margin-bottom:10px;color:var(--green2)}
+.product-explained p{line-height:1.7;overflow-wrap:anywhere}
+.product-explained .product-disclaimer{margin-top:14px;font-size:13px;color:var(--muted);line-height:1.55}
+#demo-complete{max-width:780px;margin:20px auto;padding:30px 22px;text-align:center}
+#demo-complete .checkout-actions{justify-content:center}
