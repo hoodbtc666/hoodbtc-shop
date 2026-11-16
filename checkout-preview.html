@@ -23,6 +23,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="checkout-ux.css">
 </head>
 <body>
   <!-- Living water: same file and same no-controls rule as every HOODBTC product.
@@ -85,10 +86,18 @@
           <p class="sum-note" id="wallet-status" role="status" aria-live="polite">Not connected</p>
           <label class="field"><span>Paying wallet (read-only)</span><input id="payer-address" type="text" readonly placeholder="Connect wallet to show address"></label>
           <label class="field"><span>HOODBTC Shop receiving wallet</span><input type="text" readonly value="0x4aa9ddbfec99cfae272acc0d07230f925d4540de"></label>
-          <button class="btn-capsule" type="button" disabled aria-disabled="true">Pay with USDC — disabled in preview</button>
+          <button class="btn-capsule" type="button" id="complete-demo">Complete demo checkout — no payment</button>
           <p class="sum-note">Preview only: no transaction or order submission. Live checkout requires final shipping and taxes, payment verification and secure order notifications.</p><button type="button" class="checkout-secondary" id="back-delivery">← Edit delivery details</button></div>
         </form>
       </aside>
+      <section id="demo-complete" class="glass empty-state" hidden aria-live="polite">
+        <p class="kicker">HOODBTC SHOP · DEMO</p>
+        <h2>Demo checkout complete</h2>
+        <p>This is a simulation. No payment was sent, no order was placed, and no personal information was submitted.</p>
+        <p id="demo-items-summary" class="sum-note"></p>
+        <p><strong>Payment:</strong> Not charged · <strong>Order status:</strong> Demo only</p>
+        <div class="checkout-actions"><button type="button" id="restart-demo" class="checkout-secondary">← Edit demo checkout</button><a class="btn-capsule" href="index.html">Back to shop</a></div>
+      </section>
     </section>
   </main>
 
@@ -120,6 +129,5 @@
   <script src="products.js"></script>
   <script src="shop.js"></script>
   <script src="checkout-preview.js"></script>
-  <link rel="stylesheet" href="checkout-ux.css">
 </body>
 </html>
