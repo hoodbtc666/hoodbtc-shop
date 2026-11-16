@@ -11,19 +11,7 @@
     if (d && d.provider && d.info && !discovered.some(function (e) { return e.info.uuid === d.info.uuid; })) discovered.push(d);
   });
   window.dispatchEvent(new Event("eip6963:requestProvider"));
-  var walletPicker = document.getElementById("wallet-provider");
-  function getProvider() {
-    if (!walletPicker) return window.ethereum;
-    walletPicker.innerHTML = "";
-    discovered.forEach(function (d, i) {
-      var o = document.createElement("option"); o.value = String(i); o.textContent = d.info.name; walletPicker.appendChild(o);
-    });
-    if (window.ethereum) {
-      var o = document.createElement("option"); o.value = "default"; o.textContent = "Browser wallet"; walletPicker.appendChild(o);
-    }
-    walletPicker.hidden = walletPicker.options.length < 2;
-    return discovered.length ? discovered[0].provider : window.ethereum;
-  }
+  function getProvider() { return (discovered[0] && discovered[0].provider) || window.ethereum; }
   button.addEventListener("click", async function () {
     var provider = getProvider();
     if (!provider || typeof provider.request !== "function") {
