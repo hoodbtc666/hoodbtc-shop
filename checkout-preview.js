@@ -75,21 +75,6 @@
   });
   bind("back-delivery", function () { goTo(2); });
   bind("complete-demo", function () {
-    var done = document.getElementById("demo-complete");
-    if (!done || !cartItems || !cartItems.querySelector(".cart-item")) return;
-    var total = document.getElementById("sum-total");
-    var items = document.getElementById("demo-items-summary");
-    if (items) items.textContent = "Items subtotal: " + (total ? total.textContent : "Not available") + " USD. Shipping and taxes not calculated.";
-    if (summary) summary.hidden = true;
-    if (cartItems) cartItems.hidden = true;
-    if (cartActions) cartActions.hidden = true;
-    done.hidden = false;
-    document.querySelectorAll("[data-step-label]").forEach(function (el) { el.classList.remove("active"); });
-    done.scrollIntoView({ behavior: "smooth", block: "start" });
-  });
-  bind("restart-demo", function () { goTo(2); });
-
-  bind("complete-demo", function () {
     var required = Array.from(delivery.querySelectorAll("[required]"));
     var invalid = required.find(function (input) { return !input.checkValidity(); });
     if (invalid) { goTo(2); invalid.reportValidity(); return; }
