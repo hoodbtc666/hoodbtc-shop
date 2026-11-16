@@ -19,11 +19,18 @@
 
   /* ---------- Cart state ---------- */
   function loadCart() {
-    try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
-    catch (e) { return []; }
+    try {
+      var raw = JSON.parse(localStorage.getItem(CART_KEY));
+      if (!Array.isArray(raw)) return [];
+      return raw.filter(function (i) {
+        return i && typeof i.id === "string" && byId[i.id] &&
+          typeof i.variant === "string" && Number.isInteger(i.qty) &&
+          i.qty >= 1 && i.qty <= 99;
+      });
+    } catch (e) { return []; }
   }
   function saveCart(cart) {
-    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (e) {}
     renderCartCount(cart);
   }
   function cartCount(cart) {
@@ -38,7 +45,7 @@
   function addToCart(id, variant, qty) {
     var cart = loadCart();
     var line = cart.find(function (i) { return i.id === id && i.variant === variant; });
-    if (line) { line.qty += qty; } else { cart.push({ id: id, variant: variant, qty: qty }); }
+    if (line) { line.qty = Math.min(99, line.qty + qty); } else { cart.push({ id: id, variant: variant, qty: qty }); }
     saveCart(cart);
   }
 
@@ -174,6 +181,10 @@
   function handleOrderSuccess() {
     var params = new URLSearchParams(location.search);
     if (params.get("ordered") !== "1") return;
+    try {
+      if (sessionStorage.getItem("hoodbtc-order-submitted") !== "1") return;
+      sessionStorage.removeItem("hoodbtc-order-submitted");
+    } catch (e) { return; }
     try { localStorage.removeItem(CART_KEY); } catch (e) {}
     var box = document.getElementById("cart-items");
     if (box) box.innerHTML = "";
@@ -188,7 +199,9 @@
   function wireOrderForm() {
     var form = document.getElementById("order-form");
     if (!form) return;
-    form.addEventListener("submit", function () {
+    form.addEventListener("submit", function (event) {
+      if (!loadCart().length) { event.preventDefault(); return; }
+      try { sessionStorage.setItem("hoodbtc-order-submitted", "1"); } catch (e) {}
       var cart = loadCart().filter(function (i) { return byId[i.id]; });
       var lines = cart.map(function (i) {
         var p = byId[i.id];
