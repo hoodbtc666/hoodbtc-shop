@@ -117,6 +117,47 @@
     setMeta('meta[property="og:url"]', pageUrl);
     var canon = document.querySelector('link[rel="canonical"]');
     if (canon) canon.setAttribute("href", pageUrl);
+    // SEO: source all structured data from the same catalog used by the storefront.
+    // Availability, reviews, shipping rates and ratings are intentionally omitted until verified.
+    var productImageUrl = new URL(p.image, "https://shop.hoodbtc.com/").href;
+    setMeta('meta[property="og:image"]', productImageUrl);
+    setMeta('meta[name="twitter:image"]', productImageUrl);
+    setMeta('meta[property="og:type"]', "product");
+    var productGraph = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Product",
+          "@id": pageUrl + "#product",
+          "name": p.name,
+          "description": desc,
+          "image": [productImageUrl],
+          "url": pageUrl,
+          "offers": {
+            "@type": "Offer",
+            "url": pageUrl,
+            "priceCurrency": "USD",
+            "price": Number(p.price).toFixed(2),
+            "seller": { "@type": "Organization", "name": "HOODBTC Shop", "url": "https://shop.hoodbtc.com/" }
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "HOODBTC Shop", "item": "https://shop.hoodbtc.com/" },
+            { "@type": "ListItem", "position": 2, "name": p.name, "item": pageUrl }
+          ]
+        }
+      ]
+    };
+    var jsonLd = document.getElementById("product-jsonld");
+    if (!jsonLd) {
+      jsonLd = document.createElement("script");
+      jsonLd.id = "product-jsonld";
+      jsonLd.type = "application/ld+json";
+      document.head.appendChild(jsonLd);
+    }
+    jsonLd.textContent = JSON.stringify(productGraph);
     document.getElementById("p-image").src = p.image;
     document.getElementById("p-image").alt = p.name;
     var col = (typeof HOODBTC_COLLECTIONS !== "undefined")
