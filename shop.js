@@ -100,6 +100,9 @@
     if (!p) {
       wrap.hidden = true;
       document.getElementById("product-missing").hidden = false;
+      document.title = "Product not found — HOODBTC Shop";
+      var robots = document.querySelector('meta[name="robots"]');
+      if (robots) robots.setAttribute("content", "noindex,follow");
       return;
     }
     document.title = p.name + " — HOODBTC Shop";
