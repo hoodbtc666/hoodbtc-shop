@@ -7,6 +7,7 @@ import {execSync} from 'node:child_process';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const out = resolve(root, 'dist');
 const catalog = vm.runInNewContext(await readFile(resolve(root, 'products.js'), 'utf8') + '\n({products:HOODBTC_PRODUCTS,collections:HOODBTC_COLLECTIONS})');
+const guides = vm.runInNewContext(await readFile(resolve(root, 'guides.js'), 'utf8') + '\nHOODBTC_GUIDES');
 const origin = 'https://shop.hoodbtc.com';
 const escape = value => String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const productPath = p => '/products/' + encodeURIComponent(p.id) + '/';
@@ -17,10 +18,24 @@ let lastmod = new Date().toISOString().slice(0, 10);
 try { lastmod = execSync('git log -1 --format=%cs', {cwd: root, stdio: ['ignore', 'pipe', 'ignore']}).toString().trim() || lastmod; } catch {}
 const absolute = html => html.replace(/\b(href|src|action)="(?![a-z]+:|\/|#)([^" ]+)"/gi, '$1="/$2"');
 const card = p => `<a class="product-card glass" href="${productPath(p)}"><span class="pc-media"><img src="/${p.image}" alt="${escape(p.name)}" loading="lazy" decoding="async" width="600" height="400"></span><span class="pc-body"><span class="pc-name">${escape(p.name)}</span><span class="pc-price">$${p.price.toFixed(2)}</span></span></a>`;
+const guideBlocks = items => items.map(it => it.type === 'ul'
+  ? `<ul>${it.items.map(t => `<li>${escape(t)}</li>`).join('')}</ul>`
+  : `<p>${escape(it.text)}</p>`).join('\n');
+const guideHtml = g => `<section class="product-guide glass" aria-label="Product guide">
+<h2>What it does</h2>
+${guideBlocks(g.what)}
+<h2>How it&#39;s used</h2>
+<ol>${g.steps.map(s => `<li>${escape(s)}</li>`).join('')}</ol>
+${g.howParas.map(t => `<p>${escape(t)}</p>`).join('\n')}
+<h2>Key specs</h2>
+<ul class="spec-list">${g.specs.map(s => s.label ? `<li><strong>${escape(s.label)}:</strong> ${escape(s.value)}</li>` : `<li>${escape(s.value)}</li>`).join('')}</ul>
+<h2>Good to know</h2>
+${guideBlocks(g.good)}
+</section>`;
 await rm(out, {recursive:true,force:true});
 await mkdir(out,{recursive:true});
 for (const f of await readdir(root)) {
-  if (/\.(html|js|css|png|txt|ico)$/.test(f) || f === '_headers') await cp(resolve(root,f),resolve(out,f));
+  if ((/\.(html|js|css|png|txt|ico)$/.test(f) || f === '_headers') && f !== 'guides.js') await cp(resolve(root,f),resolve(out,f));
 }
 await cp(resolve(root,'assets'),resolve(out,'assets'),{recursive:true});
 await cp(resolve(root,'payment'),resolve(out,'payment'),{recursive:true,filter: p => !p.endsWith('.test.mjs')});
@@ -46,6 +61,8 @@ for (const p of catalog.products) {
     {'@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'HOODBTC Shop',item:origin+'/'},{'@type':'ListItem',position:2,name:col?.name||'Products',item:origin+'/'+p.collection+'.html'},{'@type':'ListItem',position:3,name:p.name,item:url}]}
   ]};
   html = html.replace('</head>',`<script id="product-jsonld" type="application/ld+json">${JSON.stringify(graph).replace(/</g,'\\u003c')}</script>\n</head>`);
+  const guide = guides[p.id];
+  if (guide) html = html.replace('<div id="product-missing"', guideHtml(guide) + '\n      <div id="product-missing"');
   await mkdir(resolve(out,'products',p.id),{recursive:true});
   await writeFile(resolve(out,'products',p.id,'index.html'),html);
 }
