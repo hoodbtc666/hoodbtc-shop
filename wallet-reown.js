@@ -7,8 +7,8 @@ let modal = null;
 let connected = false;
 let loading = false;
 const imports = [
-  ["https://esm.sh/@reown/appkit@1.8.24?bundle", "https://esm.sh/@reown/appkit-adapter-ethers@1.8.24?bundle", "https://esm.sh/@reown/appkit@1.8.24/networks?bundle"],
-  ["https://cdn.jsdelivr.net/npm/@reown/appkit@1.8.24/+esm", "https://cdn.jsdelivr.net/npm/@reown/appkit-adapter-ethers@1.8.24/+esm", "https://cdn.jsdelivr.net/npm/@reown/appkit@1.8.24/networks/+esm"]
+  ["https://cdn.jsdelivr.net/npm/@reown/appkit@1.8.24/+esm", "https://cdn.jsdelivr.net/npm/@reown/appkit-adapter-ethers@1.8.24/+esm", "https://cdn.jsdelivr.net/npm/@reown/appkit@1.8.24/networks/+esm"],
+  ["https://esm.sh/@reown/appkit@1.8.24?bundle", "https://esm.sh/@reown/appkit-adapter-ethers@1.8.24?bundle", "https://esm.sh/@reown/appkit@1.8.24/networks?bundle"]
 ];
 function withTimeout(promise, ms) {
   let timer;
