@@ -250,3 +250,16 @@ main { flex: 1; width: 100%; }
   border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; font: inherit; resize: vertical;
 }
 .hidden-field { display: none; }
+
+/* Shop wallet connection — accessible mobile-first pill */
+.wallet-pill{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;max-width:210px;padding:9px 17px;border-radius:999px;border:1px solid rgba(111,242,164,.65);background:linear-gradient(145deg,rgba(22,67,43,.96),rgba(3,22,17,.96));color:#eaffef;font:700 12px/1.2 var(--sans);letter-spacing:.035em;white-space:nowrap;cursor:pointer;box-shadow:inset 0 1px rgba(255,255,255,.12),0 4px 22px rgba(53,232,127,.12);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease,background .16s ease;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.wallet-pill-icon{display:grid;place-items:center;width:24px;height:24px;flex-shrink:0;border-radius:50%;background:rgba(111,242,164,.16);color:#82ffc0;font-size:19px}
+.wallet-pill:hover:not(:disabled){transform:translateY(-1px);border-color:#a1ffca;box-shadow:0 6px 26px rgba(53,232,127,.23)}
+.wallet-pill:active:not(:disabled){transform:scale(.97)}
+.wallet-pill:focus-visible{outline:3px solid #a1ffca;outline-offset:3px}
+.wallet-pill:disabled{opacity:.72;cursor:wait}
+.wallet-pill.is-connected{border-color:rgba(111,242,164,.9);background:linear-gradient(145deg,#124d2b,#082218)}
+.wallet-status-bar{max-width:1180px;margin:0 auto;padding:0 20px 8px;text-align:right;color:#b7d7c5;font-size:11px;min-height:20px}
+@media(max-width:800px){.topbar-inner{flex-wrap:wrap;gap:10px;padding:10px 14px}.topbar-inner .links{order:3;flex-basis:100%;margin-left:0;overflow-x:auto;gap:16px;white-space:nowrap;padding:4px 0}.topbar-inner .wallet-pill{margin-left:auto}.topbar-inner .cart-link{flex-shrink:0}.wallet-status-bar{padding:0 14px 8px}}
+@media(max-width:390px){.wallet-pill{padding:8px 10px;gap:5px;font-size:11px}.wallet-pill-icon{width:20px;height:20px}.brand-glyph{width:38px;height:38px}.brand-name{font-size:16px}.topbar-inner{gap:7px}}
+@media(prefers-reduced-motion:reduce){.wallet-pill{transition:none}.wallet-pill:hover:not(:disabled){transform:none}}
