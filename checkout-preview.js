@@ -5,34 +5,102 @@
   var status = document.getElementById("wallet-status");
   var field = document.getElementById("payer-address");
   if (!button || !status || !field) return;
+  // EIP-6963 wallet discovery: let customers choose instead of silently selecting the first wallet.
   var discovered = [];
-  window.addEventListener("eip6963:announceProvider", function (event) {
-    var d = event.detail;
-    if (d && d.provider && d.info && !discovered.some(function (e) { return e.info.uuid === d.info.uuid; })) discovered.push(d);
-  });
+  var activeProvider = null;
+  var picker = document.createElement("div");
+  picker.id = "wallet-picker";
+  picker.className = "wallet-picker";
+  picker.hidden = true;
+  picker.innerHTML = '<div class="wallet-picker-panel" role="dialog" aria-modal="true" aria-labelledby="wallet-picker-title"><div class="wallet-picker-heading"><h3 id="wallet-picker-title">Choose your wallet</h3><button type="button" class="checkout-secondary" id="close-wallet-picker" aria-label="Close wallet selector">✕</button></div><p class="sum-note">Connect only. No payment or signature will be requested.</p><div id="wallet-options" class="wallet-options"></div></div>';
+  document.body.appendChild(picker);
+  var options = picker.querySelector("#wallet-options");
+  var closePicker = picker.querySelector("#close-wallet-picker");
+  function hidePicker() { picker.hidden = true; button.focus(); }
+  closePicker.addEventListener("click", hidePicker);
+  picker.addEventListener("click", function (e) { if (e.target === picker) hidePicker(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !picker.hidden) hidePicker(); });
+  function addProvider(detail) {
+    if (!detail || !detail.provider || typeof detail.provider.request !== "function" || !detail.info) return;
+    if (!discovered.some(function (entry) { return entry.info.uuid === detail.info.uuid; })) discovered.push(detail);
+  }
+  window.addEventListener("eip6963:announceProvider", function (event) { addProvider(event.detail); });
   window.dispatchEvent(new Event("eip6963:requestProvider"));
-  function getProvider() { return (discovered[0] && discovered[0].provider) || window.ethereum; }
-  button.addEventListener("click", async function () {
-    var provider = getProvider();
-    if (!provider || typeof provider.request !== "function") {
-      status.textContent = "No compatible browser wallet detected. Open in a wallet browser or install a supported wallet.";
-      return;
-    }
+  function updateStatus() {
+    if (!activeProvider) return;
+    Promise.all([
+      activeProvider.request({ method: "eth_accounts" }),
+      activeProvider.request({ method: "eth_chainId" })
+    ]).then(function (values) {
+      var address = values[0] && values[0][0];
+      field.value = address && /^0x[a-fA-F0-9]{40}$/.test(address) ? address : "";
+      if (!field.value) {
+        status.textContent = "Wallet disconnected.";
+        button.textContent = "Connect wallet";
+      } else {
+        status.textContent = values[1] === "0x2105"
+          ? "Connected on Base Mainnet — preview only, payments disabled."
+          : "Connected on another network — preview only, payments disabled.";
+        button.textContent = "Change wallet";
+      }
+    }).catch(function () { status.textContent = "Could not read wallet status."; });
+  }
+  async function connect(provider) {
+    hidePicker();
     button.disabled = true;
+    status.textContent = "Waiting for wallet approval…";
     try {
       var accounts = await provider.request({ method: "eth_requestAccounts" });
-      if (!Array.isArray(accounts) || !accounts[0] || !/^0x[a-fA-F0-9]{40}$/.test(accounts[0])) throw new Error("No valid address returned");
-      field.value = accounts[0];
-      var chainId = await provider.request({ method: "eth_chainId" });
-      status.textContent = chainId === "0x2105"
-        ? "Connected on Base Mainnet. Payment remains disabled in preview."
-        : "Wallet connected, but network is not Base Mainnet. Payment remains disabled.";
-    } catch (e) {
-      status.textContent = "Wallet connection was cancelled or failed.";
+      if (!Array.isArray(accounts) || !accounts[0] || !/^0x[a-fA-F0-9]{40}$/.test(accounts[0])) throw new Error("No valid wallet account");
+      if (activeProvider && activeProvider !== provider && typeof activeProvider.removeListener === "function") {
+        activeProvider.removeListener("accountsChanged", updateStatus);
+        activeProvider.removeListener("chainChanged", updateStatus);
+      }
+      activeProvider = provider;
+      if (typeof provider.on === "function") {
+        provider.on("accountsChanged", updateStatus);
+        provider.on("chainChanged", updateStatus);
+      }
+      updateStatus();
+    } catch (error) {
+      status.textContent = "Connection cancelled or failed. You can try again.";
     } finally {
       button.disabled = false;
     }
-  });
+  }
+  function showPicker() {
+    options.replaceChildren();
+    window.dispatchEvent(new Event("eip6963:requestProvider"));
+    var wallets = discovered.slice();
+    if (!wallets.length && window.ethereum && typeof window.ethereum.request === "function") {
+      wallets.push({ info: { name: "Browser wallet", uuid: "legacy" }, provider: window.ethereum });
+    }
+    if (!wallets.length) {
+      var notice = document.createElement("p");
+      notice.className = "sum-note";
+      notice.textContent = "No browser wallet found. On mobile, open this checkout preview in your wallet app browser. WalletConnect QR support is not enabled yet.";
+      options.appendChild(notice);
+    }
+    wallets.forEach(function (wallet) {
+      var choice = document.createElement("button");
+      choice.type = "button";
+      choice.className = "wallet-choice";
+      var name = document.createElement("span");
+      name.textContent = wallet.info.name || "Wallet";
+      choice.appendChild(name);
+      if (wallet.info.icon && /^data:image\/(png|svg\+xml|jpeg|webp);base64,/i.test(wallet.info.icon)) {
+        var img = document.createElement("img");
+        img.src = wallet.info.icon;
+        img.alt = "";
+        choice.prepend(img);
+      }
+      choice.addEventListener("click", function () { connect(wallet.provider); });
+      options.appendChild(choice);
+    });
+    picker.hidden = false;
+    closePicker.focus();
+  }
+  button.addEventListener("click", showPicker);
   var cartItems = document.getElementById("cart-items");
   var cartActions = document.querySelector(".checkout-actions");
   var summary = document.getElementById("cart-summary");
