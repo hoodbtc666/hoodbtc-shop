@@ -22,3 +22,16 @@
 #demo-complete .checkout-actions{justify-content:center}
 
 .product-buy-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}.product-buy-actions button{width:100%;min-height:52px;touch-action:manipulation;font-weight:700}.product-buy-actions .checkout-secondary{border-color:var(--green);background:rgba(0,0,0,.55)}.product-info .sum-note{margin-top:10px;line-height:1.5}@media(max-width:420px){.product-buy-actions{gap:8px}.product-buy-actions button{font-size:14px;padding:12px 9px}}
+
+/* Wallet selector on the preview checkout only. */
+.wallet-picker[hidden]{display:none!important}
+.wallet-picker{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.82);display:flex;align-items:flex-end;justify-content:center;padding:18px}
+.wallet-picker-panel{width:min(100%,480px);max-height:85dvh;overflow:auto;background:#0c1514;border:1px solid rgba(79,241,146,.4);border-radius:22px;padding:22px;color:#f3fff7;box-shadow:0 20px 80px rgba(0,0,0,.65)}
+.wallet-picker-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.wallet-picker-heading h3{margin:0;font-size:21px}
+.wallet-picker-heading .checkout-secondary{min-width:44px;min-height:44px;padding:8px}
+.wallet-options{display:grid;gap:10px;margin-top:18px}
+.wallet-choice{display:flex;align-items:center;gap:14px;width:100%;padding:14px;border:1px solid rgba(79,241,146,.25);border-radius:14px;background:rgba(255,255,255,.04);color:inherit;text-align:left;font:inherit;min-height:62px;cursor:pointer}
+.wallet-choice:hover,.wallet-choice:focus-visible{border-color:#4ff192;outline-offset:3px}
+.wallet-choice img{width:36px;height:36px;object-fit:contain;border-radius:9px}
+@media(min-width:700px){.wallet-picker{align-items:center}}
