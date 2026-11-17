@@ -1,0 +1,21 @@
+/* ============================================================
+   HOODBTC Shop — product guide sections
+   Loaded only by product pages (product.html template and the
+   static pages built from it). Styles the build-time guide
+   rendered from guides.js: What it does / How it's used /
+   Key specs / Good to know. Same Night Water design tokens
+   as style.css; modelled on the .policy text pages.
+   ============================================================ */
+
+.product-guide { margin-top: 28px; padding: 30px 34px; }
+.product-guide h2 { font-family: var(--serif); font-size: 26px; font-weight: 600; margin: 26px 0 8px; }
+.product-guide h2:first-child { margin-top: 0; }
+.product-guide p, .product-guide li { color: var(--muted); }
+.product-guide p { margin-bottom: 12px; }
+.product-guide ol, .product-guide ul { padding-left: 22px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px; }
+.product-guide .spec-list { list-style: none; padding-left: 0; }
+.product-guide .spec-list li { overflow-wrap: anywhere; }
+.product-guide .spec-list strong { color: var(--text); font-weight: 600; }
+@media (max-width: 760px) {
+  .product-guide { padding: 24px 18px; }
+}
