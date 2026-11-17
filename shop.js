@@ -24,7 +24,9 @@
       if (!Array.isArray(raw)) return [];
       return raw.filter(function (i) {
         return i && typeof i.id === "string" && byId[i.id] &&
-          typeof i.variant === "string" && Number.isInteger(i.qty) &&
+          typeof i.variant === "string" &&
+          (byId[i.id].variants && byId[i.id].variants.length ? byId[i.id].variants : ["Standard"]).includes(i.variant) &&
+          Number.isInteger(i.qty) &&
           i.qty >= 1 && i.qty <= 99;
       });
     } catch (e) { return []; }
@@ -43,6 +45,9 @@
     });
   }
   function addToCart(id, variant, qty) {
+    if (!byId[id] || !Number.isInteger(qty) || qty < 1 || qty > 99) return;
+    var allowed = byId[id].variants && byId[id].variants.length ? byId[id].variants : ["Standard"];
+    if (!allowed.includes(variant)) return;
     var cart = loadCart();
     var line = cart.find(function (i) { return i.id === id && i.variant === variant; });
     if (line) { line.qty = Math.min(99, line.qty + qty); } else { cart.push({ id: id, variant: variant, qty: qty }); }
@@ -242,6 +247,7 @@
     box.querySelectorAll("button[data-act]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var c = loadCart(); var idx = +btn.getAttribute("data-idx"); var act = btn.getAttribute("data-act");
+        if (!c[idx]) return;
         if (act === "inc") c[idx].qty = Math.min(99, c[idx].qty + 1);
         if (act === "dec") c[idx].qty = Math.max(1, c[idx].qty - 1);
         if (act === "rm") c.splice(idx, 1);
