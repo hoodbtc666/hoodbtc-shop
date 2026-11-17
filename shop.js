@@ -165,17 +165,43 @@
     document.getElementById("p-collection").textContent = col ? col.name : "";
     document.getElementById("p-name").textContent = p.name;
     document.getElementById("p-price").textContent = money(p.price);
-    document.getElementById("p-desc").textContent = p.description || "";
+    var descEl = document.getElementById("p-desc");
+    descEl.textContent = p.description || "";
+    // Make the existing product-specific explanation easier to scan on mobile.
+    // No added performance, availability or compatibility claims.
+    if (p.description && descEl && !document.getElementById("product-explained")) {
+      var info = document.createElement("section");
+      info.id = "product-explained";
+      info.className = "product-explained glass";
+      var heading = document.createElement("h3");
+      heading.textContent = "What exactly is this?";
+      var explanation = document.createElement("p");
+      explanation.textContent = p.description;
+      var reminder = document.createElement("p");
+      reminder.className = "product-disclaimer";
+      reminder.textContent = "Check device compatibility, network and regional requirements before ordering. Availability and final shipping costs are confirmed before payment.";
+      info.appendChild(heading);
+      info.appendChild(explanation);
+      info.appendChild(reminder);
+      descEl.insertAdjacentElement("afterend", info);
+      descEl.hidden = true;
+    }
     var sel = document.getElementById("p-variant");
     var variants = (p.variants && p.variants.length ? p.variants : ["Standard"]);
     sel.innerHTML = variants.map(function (v) { return "<option>" + v + "</option>"; }).join("");
     if (variants.length === 1 && variants[0] === "Standard") {
       sel.closest("label").hidden = true;
     }
-    document.getElementById("p-add").addEventListener("click", function () {
+    function addSelectedProduct() {
       var qty = Math.max(1, Math.min(99, parseInt(document.getElementById("p-qty").value, 10) || 1));
       addToCart(p.id, sel.value, qty);
       document.getElementById("p-added").hidden = false;
+    }
+    document.getElementById("p-add").addEventListener("click", addSelectedProduct);
+    var buyNow = document.getElementById("p-buy");
+    if (buyNow) buyNow.addEventListener("click", function () {
+      addSelectedProduct();
+      window.location.assign("checkout-preview.html");
     });
   }
 

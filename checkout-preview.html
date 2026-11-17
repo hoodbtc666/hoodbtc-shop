@@ -23,6 +23,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="checkout-ux.css">
 </head>
 <body>
   <!-- Living water: same file and same no-controls rule as every HOODBTC product.
@@ -54,10 +55,10 @@
   <main>
     <section class="page-head">
       <p class="kicker">HOODBTC Shop</p>
-      <h1>USDC Checkout Preview</h1>
+      <h1>Checkout, made simple.</h1><p class="sum-note">Three clear steps. No payment in preview.</p><div class="checkout-progress" aria-label="Checkout progress"><span data-step-label="1" class="active">01 · Cart</span><span data-step-label="2">02 · Delivery</span><span data-step-label="3">03 · Wallet</span></div>
     </section>
     <section class="section cart-wrap">
-      <div id="cart-items" class="cart-items"></div>
+      <div id="cart-items" class="cart-items"></div><div class="checkout-actions"><button type="button" class="btn-capsule" id="next-cart">Continue to delivery →</button></div>
       <div id="cart-empty" class="glass empty-state" hidden>
         <h2>Your cart is empty</h2>
         <p>Gear you add will wait for you here.</p>
@@ -69,7 +70,7 @@
         <div class="sum-row"><span>Items subtotal (USD)</span><strong id="sum-subtotal">$0.00</strong></div>
         <div class="sum-row"><span>Shipping &amp; taxes</span><span>Not calculated yet</span></div>
         <div class="sum-row total"><span>Estimated USDC (items only)</span><strong id="sum-total">$0.00</strong></div>
-        <form id="preview-form" class="order-form" autocomplete="on">
+        <form id="preview-form" class="order-form" autocomplete="on"><div id="delivery-step">
           <h3 class="form-title">Shipping details</h3>
           <label class="field"><span>Full name *</span><input type="text" name="name" required autocomplete="name"></label>
           <label class="field"><span>Email *</span><input type="email" name="email" required autocomplete="email"></label>
@@ -79,16 +80,24 @@
           <label class="field"><span>Province / State *</span><input type="text" name="region" required autocomplete="address-level1"></label>
           <label class="field"><span>Postal code *</span><input type="text" name="postal" required autocomplete="postal-code"></label>
           <label class="field"><span>Country *</span><input type="text" name="country" required autocomplete="country-name"></label>
-          <h3 class="form-title">Wallet payment</h3>
+          <div class="checkout-actions"><button type="button" id="back-cart" class="checkout-secondary">← Back to cart</button><button type="button" id="next-delivery" class="btn-capsule">Review wallet payment →</button></div></div><div id="wallet-step" hidden><h3 class="form-title">Wallet payment</h3>
           <p class="sum-note">Network: Base Mainnet (8453). Currency: native USDC. Never enter a seed phrase or private key.</p>
           <button class="btn-capsule" id="connect-wallet" type="button">Connect wallet</button>
           <p class="sum-note" id="wallet-status" role="status" aria-live="polite">Not connected</p>
           <label class="field"><span>Paying wallet (read-only)</span><input id="payer-address" type="text" readonly placeholder="Connect wallet to show address"></label>
           <label class="field"><span>HOODBTC Shop receiving wallet</span><input type="text" readonly value="0x4aa9ddbfec99cfae272acc0d07230f925d4540de"></label>
-          <button class="btn-capsule" type="button" disabled aria-disabled="true">Pay with USDC — disabled in preview</button>
-          <p class="sum-note">No transaction will be requested. Live checkout needs verified totals, onchain payment confirmation, order-to-transaction reconciliation, email notifications, and security review.</p>
+          <button class="btn-capsule" type="button" id="complete-demo">Complete demo checkout — no payment</button>
+          <p class="sum-note">Preview only: no transaction or order submission. Live checkout requires final shipping and taxes, payment verification and secure order notifications.</p><button type="button" class="checkout-secondary" id="back-delivery">← Edit delivery details</button></div>
         </form>
       </aside>
+      <section id="demo-complete" class="glass empty-state" hidden aria-live="polite">
+        <p class="kicker">HOODBTC SHOP · DEMO</p>
+        <h2>Demo checkout complete</h2>
+        <p>This is a simulation. No payment was sent, no order was placed, and no personal information was submitted.</p>
+        <p id="demo-items-summary" class="sum-note"></p>
+        <p><strong>Payment:</strong> Not charged · <strong>Order status:</strong> Demo only</p>
+        <div class="checkout-actions"><button type="button" id="restart-demo" class="checkout-secondary">← Edit demo checkout</button><a class="btn-capsule" href="index.html">Back to shop</a></div>
+      </section>
     </section>
   </main>
 
@@ -120,5 +129,6 @@
   <script src="products.js"></script>
   <script src="shop.js"></script>
   <script src="checkout-preview.js"></script>
+  <script type="module" src="wallet-reown.js"></script>
 </body>
 </html>

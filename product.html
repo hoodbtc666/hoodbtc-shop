@@ -23,6 +23,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="checkout-ux.css">
 </head>
 <body>
   <!-- Living water: same file and same no-controls rule as every HOODBTC product.
@@ -67,7 +68,7 @@
           <label class="field"><span>Quantity</span>
             <input id="p-qty" type="number" min="1" max="99" value="1">
           </label>
-          <button id="p-add" class="btn-capsule" type="button">Add to Cart</button>
+          <div class="product-buy-actions"><button id="p-buy" class="btn-capsule" type="button">Buy Now</button><button id="p-add" class="checkout-secondary" type="button">Add to Cart</button></div><p class="sum-note">Buy Now opens the secure checkout preview. No payment is taken in demo.</p>
           <p class="added-note" id="p-added" hidden>Added — <a href="cart.html">view cart</a></p>
         </div>
       </div>
@@ -104,6 +105,7 @@
       <p class="footer-legal">&copy; HOODBTC. All prices in USD. Shipping confirmed per order before you pay.</p>
     </div>
   </footer>
+  <link rel="stylesheet" href="checkout-ux.css">
   <script src="products.js"></script>
   <script src="shop.js"></script>
 </body>
