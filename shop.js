@@ -81,7 +81,7 @@
   /* ---------- Collection grids ---------- */
   function productsFor(slug) {
     if (slug === "latest-devices") return products.filter(function (p) { return p.drop; });
-    return products.filter(function (p) { return p.collection === slug; });
+    return products.filter(function (p) { return p.collection === slug || (p.alsoIn && p.alsoIn.indexOf(slug) !== -1); });
   }
   function renderGrid() {
     var grid = document.getElementById("product-grid");

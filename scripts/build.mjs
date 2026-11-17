@@ -46,7 +46,7 @@ for (const p of catalog.products) {
 for (const c of catalog.collections) {
   const file=resolve(out,c.slug+'.html');
   try {
-    const products=c.slug==='latest-devices'?catalog.products.filter(p=>p.drop):catalog.products.filter(p=>p.collection===c.slug);
+    const products=c.slug==='latest-devices'?catalog.products.filter(p=>p.drop):catalog.products.filter(p=>p.collection===c.slug||(p.alsoIn&&p.alsoIn.includes(c.slug)));
     let html=await readFile(file,'utf8');
     html=html.replace(/(<div[^>]+id="product-grid"[^>]*>)[\s\S]*?(<\/div>)/,`$1${products.map(card).join('\n')}$2`);
     await writeFile(file,html);
