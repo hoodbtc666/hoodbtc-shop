@@ -266,6 +266,10 @@ main { flex: 1; width: 100%; }
 
 
 /* Mobile and desktop usability refinement — accessible targets and robust layout. */
+[hidden]{display:none!important}
+.product-media{aspect-ratio:1/1}
+.product-media img{height:100%;max-height:620px;object-fit:contain}
+.product-info h1{overflow-wrap:anywhere}
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-padding-top:90px}
 body{overflow-x:clip}

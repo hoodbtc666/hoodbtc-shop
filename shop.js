@@ -14,7 +14,7 @@
     return "$" + Number(n || 0).toFixed(2);
   };
   var products = (typeof HOODBTC_PRODUCTS !== "undefined") ? HOODBTC_PRODUCTS : [];
-  var byId = {};
+  var byId = Object.create(null);
   products.forEach(function (p) { byId[p.id] = p; });
 
   /* ---------- Cart state ---------- */
@@ -32,8 +32,9 @@
     } catch (e) { return []; }
   }
   function saveCart(cart) {
-    try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (e) {}
+    try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (e) { return false; }
     renderCartCount(cart);
+    return true;
   }
   function cartCount(cart) {
     return cart.reduce(function (s, i) { return s + i.qty; }, 0);
@@ -51,7 +52,7 @@
     var cart = loadCart();
     var line = cart.find(function (i) { return i.id === id && i.variant === variant; });
     if (line) { line.qty = Math.min(99, line.qty + qty); } else { cart.push({ id: id, variant: variant, qty: qty }); }
-    saveCart(cart);
+    return saveCart(cart);
   }
 
   /* ---------- Mobile collection nav (phones only; CSS hides it on desktop) ---------- */
@@ -72,7 +73,7 @@
     nav.className = "mobile-nav";
     nav.setAttribute("aria-label", "Collections");
     nav.innerHTML = links.map(function (l) {
-      return '<a href="' + l[0] + '">' + l[1] + "</a>";
+      return '<a href="/' + l[0] + '">' + l[1] + "</a>";
     }).join("");
     header.insertAdjacentElement("afterend", nav);
   }
@@ -89,8 +90,8 @@
     var empty = document.getElementById("empty-state");
     if (!list.length) { if (empty) empty.hidden = false; return; }
     grid.innerHTML = list.map(function (p) {
-      return '<a class="product-card glass" href="product.html?id=' + encodeURIComponent(p.id) + '">' +
-        '<span class="pc-media"><img src="' + p.image + '" alt="' + p.name + '" loading="lazy"></span>' +
+      return '<a class="product-card glass" href="/products/' + encodeURIComponent(p.id) + '/">' +
+        '<span class="pc-media"><img src="/' + p.image + '" alt="' + p.name + '" loading="lazy" decoding="async" width="600" height="400"></span>' +
         '<span class="pc-body"><span class="pc-name">' + p.name + '</span>' +
         '<span class="pc-price">' + money(p.price) + '</span></span></a>';
     }).join("");
@@ -100,7 +101,7 @@
   function renderProduct() {
     var wrap = document.getElementById("product-detail");
     if (!wrap) return;
-    var id = new URLSearchParams(location.search).get("id");
+    var id = document.documentElement.getAttribute("data-product-id") || new URLSearchParams(location.search).get("id");
     var p = id && byId[id];
     if (!p) {
       wrap.hidden = true;
@@ -112,7 +113,7 @@
     }
     document.title = p.name + " — HOODBTC Shop";
     var desc = p.description || "";
-    var pageUrl = "https://shop.hoodbtc.com/product.html?id=" + encodeURIComponent(p.id);
+    var pageUrl = "https://shop.hoodbtc.com/products/" + encodeURIComponent(p.id) + "/";
     var setMeta = function (selector, value) {
       var el = document.querySelector(selector);
       if (el) el.setAttribute("content", value);
@@ -166,7 +167,7 @@
       document.head.appendChild(jsonLd);
     }
     jsonLd.textContent = JSON.stringify(productGraph);
-    document.getElementById("p-image").src = p.image;
+    document.getElementById("p-image").src = "/" + p.image;
     document.getElementById("p-image").alt = p.name;
     var col = (typeof HOODBTC_COLLECTIONS !== "undefined")
       ? HOODBTC_COLLECTIONS.find(function (c) { return c.slug === p.collection; }) : null;
@@ -204,15 +205,19 @@
       sel.closest("label").hidden = true;
     }
     function addSelectedProduct() {
-      var qty = Math.max(1, Math.min(99, parseInt(document.getElementById("p-qty").value, 10) || 1));
-      addToCart(p.id, sel.value, qty);
-      document.getElementById("p-added").hidden = false;
+      var field = document.getElementById("p-qty");
+      if (!field.reportValidity()) return false;
+      var saved = addToCart(p.id, sel.value, Number(field.value));
+      var note = document.getElementById("p-added");
+      note.hidden = false;
+      note.setAttribute("role", "status");
+      note.textContent = saved ? "Added to your cart." : "Your browser could not save the cart. Allow site storage and try again.";
+      return saved;
     }
     document.getElementById("p-add").addEventListener("click", addSelectedProduct);
     var buyNow = document.getElementById("p-buy");
     if (buyNow) buyNow.addEventListener("click", function () {
-      addSelectedProduct();
-      window.location.assign("checkout-preview.html");
+      if (addSelectedProduct()) window.location.assign("/checkout-preview.html");
     });
   }
 
@@ -257,39 +262,56 @@
   }
 
   /* ---------- Order form (Netlify Forms) ---------- */
-  function handleOrderSuccess() {
-    var params = new URLSearchParams(location.search);
-    if (params.get("ordered") !== "1") return;
-    try {
-      if (sessionStorage.getItem("hoodbtc-order-submitted") !== "1") return;
-      sessionStorage.removeItem("hoodbtc-order-submitted");
-    } catch (e) { return; }
-    try { localStorage.removeItem(CART_KEY); } catch (e) {}
+  function showOrderSuccess() {
+    saveCart([]);
     var box = document.getElementById("cart-items");
     if (box) box.innerHTML = "";
-    var empty = document.getElementById("cart-empty");
-    if (empty) empty.hidden = true;
-    var summary = document.getElementById("cart-summary");
-    if (summary) summary.hidden = true;
-    var ok = document.getElementById("order-success");
-    if (ok) ok.hidden = false;
-    renderCartCount([]);
+    document.getElementById("cart-empty").hidden = true;
+    document.getElementById("cart-summary").hidden = true;
+    var success = document.getElementById("order-success");
+    success.hidden = false;
+    success.setAttribute("tabindex", "-1");
+    success.focus();
   }
   function wireOrderForm() {
     var form = document.getElementById("order-form");
     if (!form) return;
-    form.addEventListener("submit", function (event) {
-      if (!loadCart().length) { event.preventDefault(); return; }
-      try { sessionStorage.setItem("hoodbtc-order-submitted", "1"); } catch (e) {}
-      var cart = loadCart().filter(function (i) { return byId[i.id]; });
+    var submitting = false;
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      if (submitting || !form.reportValidity()) return;
+      var cart = loadCart();
+      if (!cart.length) return;
       var lines = cart.map(function (i) {
         var p = byId[i.id];
         return i.qty + " x " + p.name + (i.variant === "Standard" ? "" : " (" + i.variant + ")") + " — " + money(p.price * i.qty);
       });
       var subtotal = cart.reduce(function (s, i) { return s + byId[i.id].price * i.qty; }, 0);
       lines.push("Subtotal: " + money(subtotal) + " (shipping confirmed before payment)");
-      var field = document.getElementById("order-lines");
-      if (field) field.value = lines.join("\n");
+      document.getElementById("order-lines").value = lines.join("\n");
+      var message = document.getElementById("order-status");
+      var button = form.querySelector('button[type="submit"]');
+      var controls = document.querySelectorAll('#cart-items button');
+      submitting = true;
+      button.disabled = true;
+      controls.forEach(function (el) { el.disabled = true; });
+      message.textContent = "Sending your order request…";
+      try {
+        var response = await fetch("/", {
+          method: "POST",
+          headers: {"Content-Type": "application/x-www-form-urlencoded"},
+          body: new URLSearchParams(new FormData(form)).toString()
+        });
+        if (!response.ok) throw new Error("Order request rejected");
+        // Never accept a URL flag or a marker set before the server responds.
+        showOrderSuccess();
+      } catch (error) {
+        message.textContent = "We could not confirm your request. Your cart is saved. Please try again, or contact contact@hoodbtc.com before resubmitting if your connection was interrupted.";
+      } finally {
+        submitting = false;
+        button.disabled = false;
+        controls.forEach(function (el) { el.disabled = false; });
+      }
     });
   }
 
@@ -299,5 +321,4 @@
   renderProduct();
   renderCartPage();
   wireOrderForm();
-  handleOrderSuccess();
 })();
