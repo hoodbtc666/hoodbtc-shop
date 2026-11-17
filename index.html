@@ -47,10 +47,10 @@
         <a href="connectivity.html">Connectivity &amp; eSIM</a>
         <a href="hotspots.html">Hotspots</a>
       </nav>
-      <button type="button" id="connect-wallet" class="btn-capsule" disabled style="font-size:12px;padding:10px 14px;white-space:nowrap">Connect Wallet</button>
+      <button type="button" id="connect-wallet" class="wallet-pill" disabled aria-label="Connect crypto wallet"><span class="wallet-pill-icon" aria-hidden="true">◈</span><span class="wallet-pill-label">Connect Wallet</span></button>
       <a class="cart-link" href="cart.html" aria-label="Cart">Cart <span class="cart-count" data-cart-count>0</span></a>
     </div>
-    <div style="max-width:1200px;margin:0 auto;padding:0 16px 8px;text-align:right"><span id="wallet-status" role="status" aria-live="polite" style="font-size:12px">Wallet not connected</span><input id="payer-address" type="hidden" readonly></div>
+    <div class="wallet-status-bar"><span id="wallet-status" role="status" aria-live="polite">Connect your wallet to get started. No payment requested.</span><input id="payer-address" type="hidden" readonly></div>
   </header>
 
   <main>
