@@ -104,7 +104,7 @@
     }
     document.title = p.name + " — HOODBTC Shop";
     var desc = p.description || "";
-    var pageUrl = "https://shop-hoodbtc.netlify.app/product.html?id=" + encodeURIComponent(p.id);
+    var pageUrl = "https://shop.hoodbtc.com/product.html?id=" + encodeURIComponent(p.id);
     var setMeta = function (selector, value) {
       var el = document.querySelector(selector);
       if (el) el.setAttribute("content", value);
