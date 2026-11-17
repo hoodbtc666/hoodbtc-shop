@@ -113,21 +113,25 @@
     }
     document.title = p.name + " — HOODBTC Shop";
     var desc = p.description || "";
+    var BRANDS = { weatherxm: "WeatherXM", geodnet: "GEODNET", dimo: "DIMO", natix: "NATIX", sensecap: "SenseCAP", helium: "Helium", ledger: "Ledger", tangem: "Tangem", safepal: "SafePal", cryptosteel: "Cryptosteel", trezor: "Trezor", deeper: "Deeper Network", mntd: "MNTD" };
+    var brand = BRANDS[String(p.id).split("-")[0]] || "HOODBTC Shop";
+    var metaText = (function (t) { t = String(t).replace(/\s+/g, " ").trim(); if (t.length <= 160) return t; var cut = t.slice(0, 157); var sp = cut.lastIndexOf(" "); return (sp > 80 ? cut.slice(0, sp) : cut).trim() + "…"; })(desc);
     var pageUrl = "https://shop.hoodbtc.com/products/" + encodeURIComponent(p.id) + "/";
     var setMeta = function (selector, value) {
       var el = document.querySelector(selector);
       if (el) el.setAttribute("content", value);
     };
-    setMeta('meta[name="description"]', desc);
+    setMeta('meta[name="description"]', metaText);
     setMeta('meta[property="og:title"]', p.name + " — HOODBTC Shop");
-    setMeta('meta[property="og:description"]', desc);
+    setMeta('meta[property="og:description"]', metaText);
     setMeta('meta[name="twitter:title"]', p.name + " — HOODBTC Shop");
-    setMeta('meta[name="twitter:description"]', desc);
+    setMeta('meta[name="twitter:description"]', metaText);
     setMeta('meta[property="og:url"]', pageUrl);
     var canon = document.querySelector('link[rel="canonical"]');
     if (canon) canon.setAttribute("href", pageUrl);
     // SEO: source all structured data from the same catalog used by the storefront.
-    // Availability, reviews, shipping rates and ratings are intentionally omitted until verified.
+    // Availability is declared InStock: every listed product is orderable; availability and
+    // shipping are confirmed by email before any payment (manual-order model).
     var productImageUrl = new URL(p.image, "https://shop.hoodbtc.com/").href;
     setMeta('meta[property="og:image"]', productImageUrl);
     setMeta('meta[name="twitter:image"]', productImageUrl);
@@ -139,6 +143,8 @@
           "@type": "Product",
           "@id": pageUrl + "#product",
           "name": p.name,
+          "brand": { "@type": "Brand", "name": brand },
+          "sku": p.id,
           "description": desc,
           "image": [productImageUrl],
           "url": pageUrl,
@@ -147,6 +153,7 @@
             "url": pageUrl,
             "priceCurrency": "USD",
             "price": Number(p.price).toFixed(2),
+            "availability": "https://schema.org/InStock",
             "seller": { "@type": "Organization", "name": "HOODBTC Shop", "url": "https://shop.hoodbtc.com/" }
           }
         },
