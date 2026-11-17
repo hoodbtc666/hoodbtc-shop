@@ -1,0 +1,60 @@
+import {readFile, writeFile, mkdir, readdir, cp, rm} from 'node:fs/promises';
+import {resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import vm from 'node:vm';
+
+const root = fileURLToPath(new URL('../', import.meta.url));
+const out = resolve(root, 'dist');
+const catalog = vm.runInNewContext(await readFile(resolve(root, 'products.js'), 'utf8') + '\n({products:HOODBTC_PRODUCTS,collections:HOODBTC_COLLECTIONS})');
+const origin = 'https://shop.hoodbtc.com';
+const escape = value => String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const productPath = p => '/products/' + encodeURIComponent(p.id) + '/';
+const absolute = html => html.replace(/\b(href|src|action)="(?![a-z]+:|\/|#)([^" ]+)"/gi, '$1="/$2"');
+const card = p => `<a class="product-card glass" href="${productPath(p)}"><span class="pc-media"><img src="/${p.image}" alt="${escape(p.name)}" loading="lazy" decoding="async" width="600" height="400"></span><span class="pc-body"><span class="pc-name">${escape(p.name)}</span><span class="pc-price">$${p.price.toFixed(2)}</span></span></a>`;
+await rm(out, {recursive:true,force:true});
+await mkdir(out,{recursive:true});
+for (const f of await readdir(root)) {
+  if (/\.(html|js|css|png|txt)$/.test(f) || f === '_headers') await cp(resolve(root,f),resolve(out,f));
+}
+await cp(resolve(root,'assets'),resolve(out,'assets'),{recursive:true});
+await cp(resolve(root,'payment'),resolve(out,'payment'),{recursive:true,filter: p => !p.endsWith('.test.mjs')});
+const template = await readFile(resolve(root,'product.html'),'utf8');
+for (const p of catalog.products) {
+  const title = p.name + ' — HOODBTC Shop';
+  const url = origin + productPath(p);
+  let html = absolute(template).replace('<html lang="en">',`<html lang="en" data-product-id="${escape(p.id)}">`);
+  html = html.replace(/<title>.*?<\/title>/,`<title>${escape(title)}</title>`)
+    .replace(/<link rel="canonical"[^>]+>/,`<link rel="canonical" href="${url}">`);
+  for (const [key,value] of Object.entries({'description':p.description,'og:title':title,'og:description':p.description,'og:url':url,'og:image':origin+'/'+p.image,'og:type':'product','twitter:title':title,'twitter:description':p.description,'twitter:image':origin+'/'+p.image})) {
+    html = html.replace(new RegExp(`<meta (name|property)="${key}" content="[^"]*">`),`<meta ${key.startsWith('og:')?'property':'name'}="${key}" content="${escape(value)}">`);
+  }
+  const col = catalog.collections.find(c=>c.slug===p.collection);
+  html = html.replace(/<img id="p-image"[^>]*>/,`<img id="p-image" src="/${p.image}" alt="${escape(p.name)}" fetchpriority="high" decoding="async" width="600" height="600">`)
+    .replace(/(<h1 id="p-name">).*?(<\/h1>)/,`$1${escape(p.name)}$2`)
+    .replace(/(<p class="price" id="p-price">).*?(<\/p>)/,(_match,open,close)=>open+'$'+p.price.toFixed(2)+close)
+    .replace(/(<p class="kicker" id="p-collection">).*?(<\/p>)/,`$1${escape(col?.name||'')}$2`)
+    .replace(/(<p class="product-desc" id="p-desc">).*?(<\/p>)/,`$1${escape(p.description)}$2`)
+    .replace(/<select id="p-variant">.*?<\/select>/,`<select id="p-variant">${(p.variants||['Standard']).map(v=>`<option>${escape(v)}</option>`).join('')}</select>`);
+  const graph = {'@context':'https://schema.org','@graph':[
+    {'@type':'Product','@id':url+'#product',name:p.name,description:p.description,image:[origin+'/'+p.image],url,sku:p.id,offers:{'@type':'Offer',url,priceCurrency:'USD',price:p.price.toFixed(2),seller:{'@type':'Organization',name:'HOODBTC Shop',url:origin+'/'}}},
+    {'@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'HOODBTC Shop',item:origin+'/'},{'@type':'ListItem',position:2,name:col?.name||'Products',item:origin+'/'+p.collection+'.html'},{'@type':'ListItem',position:3,name:p.name,item:url}]}
+  ]};
+  html = html.replace('</head>',`<script id="product-jsonld" type="application/ld+json">${JSON.stringify(graph).replace(/</g,'\\u003c')}</script>\n</head>`);
+  await mkdir(resolve(out,'products',p.id),{recursive:true});
+  await writeFile(resolve(out,'products',p.id,'index.html'),html);
+}
+for (const c of catalog.collections) {
+  const file=resolve(out,c.slug+'.html');
+  try {
+    const products=c.slug==='latest-devices'?catalog.products.filter(p=>p.drop):catalog.products.filter(p=>p.collection===c.slug);
+    let html=await readFile(file,'utf8');
+    html=html.replace(/(<div[^>]+id="product-grid"[^>]*>)[\s\S]*?(<\/div>)/,`$1${products.map(card).join('\n')}$2`);
+    await writeFile(file,html);
+  } catch(e) { if(e.code!=='ENOENT') throw e; }
+}
+// Known legacy links remain crawlable; unknown IDs retain the noindex fallback.
+const redirects=catalog.products.flatMap(p=>['/product.html','/product'].map(path=>`${path} id=${p.id} ${productPath(p)} 301!`)).join('\n');
+await writeFile(resolve(out,'_redirects'),redirects+'\n'+await readFile(resolve(root,'_redirects'),'utf8'));
+const pages=['/',...catalog.collections.map(c=>'/'+c.slug+'.html'),...['terms','privacy','shipping','returns'].map(p=>'/'+p+'.html'),...catalog.products.map(productPath)];
+await writeFile(resolve(out,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+pages.map(p=>`<url><loc>${origin}${escape(p)}</loc></url>`).join('\n')+'\n</urlset>\n');
+console.log(`Built ${catalog.products.length} product pages with static metadata, product data, collection links and sitemap.`);

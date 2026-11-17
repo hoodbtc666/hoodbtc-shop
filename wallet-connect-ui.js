@@ -10,7 +10,8 @@
  function setLabel(value){label.textContent=value}
  function setReady(){ready=true;button.disabled=false;setLabel(connected?"Manage Wallet":"Connect Wallet");if(!connected)status.textContent="Choose a wallet to connect. No payment requested."}
  window.addEventListener("hoodbtc:reown-ready",setReady);
- window.addEventListener("hoodbtc:reown-error",()=>{ready=false;button.disabled=true;setLabel("Unavailable");status.textContent="Wallet service unavailable. Refresh to try again."});
+ window.addEventListener("hoodbtc:reown-loading",()=>{ready=false;button.disabled=true;setLabel("Loading Wallet");status.textContent="Opening wallet connection…"});
+ window.addEventListener("hoodbtc:reown-error",()=>{ready=true;button.disabled=false;setLabel("Retry Wallet");status.textContent="Wallet service unavailable. Try again, or continue with your order request without a wallet."});
  window.addEventListener("hoodbtc:reown-account",event=>{
   const account=event.detail||{};
   const address=/^0x[a-fA-F0-9]{40}$/.test(account.address||"")?account.address:"";
@@ -22,5 +23,4 @@
   if(ready)button.disabled=false;
  });
  button.addEventListener("click",()=>{if(!ready)return;window.dispatchEvent(new Event("hoodbtc:reown-open"))});
- window.setTimeout(()=>{if(!ready){status.textContent="Wallet service is taking longer than expected. Check your connection.";setLabel("Loading Wallet")}},12000);
 })();

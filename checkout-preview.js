@@ -14,8 +14,13 @@
     status.textContent = "Not connected — choose a wallet.";
   });
   window.addEventListener("hoodbtc:reown-error", function () {
+    button.disabled = false;
+    button.textContent = "Retry wallet connection";
+    status.textContent = "Wallet connection unavailable. Try again later. Payments remain disabled.";
+  });
+  window.addEventListener("hoodbtc:reown-loading", function () {
     button.disabled = true;
-    status.textContent = "Wallet connection unavailable. Please reload or try again later.";
+    status.textContent = "Opening wallet connection…";
   });
   window.addEventListener("hoodbtc:reown-account", function (event) {
     var data = event.detail || {};

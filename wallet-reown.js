@@ -7,11 +7,12 @@ let modal = null;
 let connected = false;
 let loading = false;
 const imports = [
-  ["https://esm.sh/@reown/appkit@1?bundle", "https://esm.sh/@reown/appkit-adapter-ethers@1?bundle", "https://esm.sh/@reown/appkit@1/networks?bundle"],
-  ["https://cdn.jsdelivr.net/npm/@reown/appkit@1/+esm", "https://cdn.jsdelivr.net/npm/@reown/appkit-adapter-ethers@1/+esm", "https://cdn.jsdelivr.net/npm/@reown/appkit@1/networks/+esm"]
+  ["https://cdn.jsdelivr.net/npm/@reown/appkit@1.8.24/+esm", "https://cdn.jsdelivr.net/npm/@reown/appkit-adapter-ethers@1.8.24/+esm", "https://cdn.jsdelivr.net/npm/@reown/appkit@1.8.24/networks/+esm"],
+  ["https://esm.sh/@reown/appkit@1.8.24?bundle", "https://esm.sh/@reown/appkit-adapter-ethers@1.8.24?bundle", "https://esm.sh/@reown/appkit@1.8.24/networks?bundle"]
 ];
 function withTimeout(promise, ms) {
-  return Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(new Error("Wallet module timeout")), ms))]);
+  let timer;
+  return Promise.race([promise, new Promise((_, reject) => { timer = setTimeout(() => reject(new Error("Wallet module timeout")), ms); })]).finally(() => clearTimeout(timer));
 }
 async function init() {
   if (loading || modal) return;
@@ -48,11 +49,14 @@ async function init() {
   emit("error");
 }
 window.addEventListener("hoodbtc:reown-open", async () => {
+  if (loading) return;
+  emit("loading");
   if (!modal) {
     await init();
     if (!modal) return;
   }
-  try { await modal.open({ view: connected ? "Account" : "Connect" }); }
+  try { await modal.open({ view: connected ? "Account" : "Connect" }); emit("ready"); }
   catch (error) { console.error("Unable to open wallet selector", error); emit("error"); }
 });
-init();
+// No wallet provider requests during ordinary catalog browsing.
+emit("ready");

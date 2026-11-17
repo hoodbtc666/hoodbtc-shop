@@ -19,3 +19,16 @@ test("rejects incorrect transfer recipient",()=>assert.equal(check({receipt:{...
 test("rejects duplicate matching events",()=>assert.equal(check({receipt:{...receipt,logs:[log,log]}}).ok,false));
 test("parses exact six decimals",()=>assert.equal(parseUSDC("0.000001"),1n));
 test("rejects overprecision",()=>assert.throws(()=>parseUSDC("1.0000001")));
+test("rejects invalid confirmation policy",()=>{
+  for(const minConfirmations of [0,-1,2,NaN,Infinity,'3']) assert.equal(check({minConfirmations}).ok,false);
+});
+test("malformed receipt logs fail closed without throwing",()=>{
+  for(const logs of [null,{},'bad',[null],[{}],[{...log,topics:[null,log.topics[1],log.topics[2]]}]]) assert.equal(check({receipt:{...receipt,logs}}).ok,false);
+});
+test("rejects removed events and malformed ABI address padding",()=>{
+  assert.equal(check({receipt:{...receipt,logs:[{...log,removed:true}]}}).ok,false);
+  for(const index of [1,2]) {
+    const topics=[...log.topics];topics[index]='0x'+'ff'.repeat(12)+topics[index].slice(-40);
+    assert.equal(check({receipt:{...receipt,logs:[{...log,topics}]}}).ok,false);
+  }
+});
