@@ -168,6 +168,8 @@
     document.getElementById("p-collection").textContent = col ? col.name : "";
     document.getElementById("p-name").textContent = p.name;
     document.getElementById("p-price").textContent = money(p.price);
+    var qtyField = document.getElementById("p-qty");
+    if (qtyField) qtyField.setAttribute("inputmode", "numeric");
     var descEl = document.getElementById("p-desc");
     descEl.textContent = p.description || "";
     // Make the existing product-specific explanation easier to scan on mobile.
@@ -191,7 +193,8 @@
     }
     var sel = document.getElementById("p-variant");
     var variants = (p.variants && p.variants.length ? p.variants : ["Standard"]);
-    sel.innerHTML = variants.map(function (v) { return "<option>" + v + "</option>"; }).join("");
+    sel.replaceChildren();
+    variants.forEach(function (v) { var option = document.createElement("option"); option.value = String(v); option.textContent = String(v); sel.appendChild(option); });
     if (variants.length === 1 && variants[0] === "Standard") {
       sel.closest("label").hidden = true;
     }
