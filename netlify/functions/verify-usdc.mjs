@@ -18,7 +18,7 @@ export async function handler(event){
   if(event.httpMethod!=="POST")return reply(405,{ok:false,error:"POST required"});
   if((event.body||"").length>2000)return reply(413,{ok:false,error:"Request too large"});
   let input;try{input=JSON.parse(event.body||"{}")}catch{return reply(400,{ok:false,error:"Invalid JSON"})}
-  if(!/^0x[0-9a-fA-F]{64}$/.test(input.txHash||"") || !/^(0|[1-9]\\d*)(\\.\\d{1,6})?$/.test(input.amountUSDC||""))return reply(400,{ok:false,error:"Invalid transaction or amount"});
+  if(!/^0x[0-9a-fA-F]{64}$/.test(input.txHash||"") || !/^(0|[1-9]\d*)(\.\d{1,6})?$/.test(input.amountUSDC||""))return reply(400,{ok:false,error:"Invalid transaction or amount"});
   try{
     const chainHex=await rpc("eth_chainId",[]);
     if(Number.parseInt(chainHex,16)!==8453)return reply(503,{ok:false,error:"RPC chain mismatch"});
