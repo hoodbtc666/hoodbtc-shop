@@ -302,3 +302,7 @@ img,video{max-width:100%}
 @media(prefers-reduced-motion:reduce){
  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+/* Order confirmation (cart page): the buyer's copy of the order summary. */
+.order-summary-box{white-space:pre-wrap;text-align:left;font-size:.95rem;line-height:1.5;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:16px auto;max-width:560px;color:var(--text)}
+.wallet-address{word-break:break-all;color:var(--green2)}

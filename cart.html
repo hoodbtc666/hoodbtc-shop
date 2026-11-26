@@ -66,26 +66,36 @@
         <a class="text-link" href="index.html">&larr; Browse collections</a>
       </div>
       <div id="order-success" class="glass empty-state" hidden>
-        <h2>Order request submitted</h2>
-        <p>Thank you for sending your request. HOODBTC will review availability, shipping and the final price before requesting payment. If you do not receive confirmation, contact contact@hoodbtc.com. No payment has been taken.</p>
+        <h2>Order received</h2>
+        <p>Thank you — your order is in. Your order reference is <strong id="order-ref-out">—</strong>. Keep it for any questions about this order.</p>
+        <pre id="order-summary-out" class="order-summary-box"></pre>
+        <h3>What happens next</h3>
+        <p>1. We confirm your order by email, usually within a day, with the final total including shipping.<br>
+        2. You then pay that confirmed total — no payment is taken before that email, and please do not pay before it arrives:<br>
+        <strong>Crypto (USDC):</strong> send the confirmed total in USDC on Base to <span class="wallet-address">0x4aa9ddbfec99cfae272acc0d07230f925d4540de</span><br>
+        <strong>Interac e-Transfer:</strong> [PETER TO SUPPLY — Interac e-Transfer email address]<br>
+        3. We prepare and ship your order once payment arrives. Refunds follow the <a href="returns.html">Returns policy</a>.</p>
+        <p>If you do not receive the confirmation email, contact contact@hoodbtc.com and quote your order reference. No payment has been taken.</p>
         <a class="text-link" href="index.html">&larr; Back to the shop</a>
       </div>
       <aside id="cart-summary" class="glass cart-summary" hidden>
         <h2>Summary</h2>
         <div class="wallet-connect-box"><h3 class="form-title">Connect your wallet</h3><button type="button" class="btn-capsule" id="connect-wallet" disabled>Loading wallet connection…</button><p class="sum-note" id="wallet-status" role="status" aria-live="polite">Connecting is free. No payment or signature requested.</p><label class="field"><span>Connected wallet</span><input id="payer-address" type="text" readonly placeholder="Not connected"></label></div>
-        <p class="sum-note"><a class="text-link" href="checkout-preview.html">Preview new USDC checkout on Base (payments disabled) &rarr;</a></p>
         <div class="sum-row"><span>Subtotal</span><strong id="sum-subtotal">$0.00</strong></div>
         <div class="sum-row muted"><span>Shipping</span><span>Confirmed before payment</span></div>
         <div class="sum-row total"><span>Items subtotal (USD)</span><strong id="sum-total">$0.00</strong></div>
-        <!-- Manual ordering: the order goes to HOODBTC via Netlify Forms.
-             No payment is taken here — Peter confirms availability and
-             shipping, then sends payment details (crypto / Interac). -->
+        <!-- Ordering is open (Peter's ruling, 2026-11-25): the order goes
+             to HOODBTC via Netlify Forms. No payment is taken here — Peter
+             confirms the total including shipping by email, then the buyer
+             pays (crypto / Interac). -->
         <form id="order-form" class="order-form" name="shop-order" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" action="cart.html?ordered=1">
           <input type="hidden" name="form-name" value="shop-order">
           <p class="hidden-field"><label>Don&rsquo;t fill this out: <input name="bot-field"></label></p>
           <input type="hidden" id="order-lines" name="order" value="">
+          <input type="hidden" id="order-ref" name="order_ref" value="">
+          <input type="hidden" id="order-summary" name="order_summary" value="">
           <h3 class="form-title">Place your order</h3>
-          <p class="sum-note">This is an order request, not a payment. Item prices are in USD; shipping, availability and any applicable taxes are confirmed by email before you decide whether to pay.</p>
+          <p class="sum-note">Ordering is open and every item listed is in stock. Item prices are in USD. Send your order now — no payment is taken on this page. We confirm the final total, including shipping and any applicable taxes, by email, usually within a day, with payment instructions. You only pay after that confirmation.</p>
           <label class="field"><span>Full name *</span><input type="text" name="name" required autocomplete="name"></label>
           <label class="field"><span>Email *</span><input type="email" name="email" required autocomplete="email"></label>
           <label class="field"><span>Phone (optional)</span><input type="tel" name="phone" autocomplete="tel"></label>
@@ -102,7 +112,7 @@
           </label>
           <label class="field"><span>Notes (optional)</span><textarea name="notes" rows="3"></textarea></label>
           <p id="order-status" role="status" aria-live="polite"></p>
-          <button class="btn-capsule" type="submit">Send order request — no payment</button>
+          <button class="btn-capsule" type="submit">Place order — pay after confirmation</button>
         </form>
       </aside>
     </section>

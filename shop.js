@@ -224,7 +224,7 @@
     document.getElementById("p-add").addEventListener("click", addSelectedProduct);
     var buyNow = document.getElementById("p-buy");
     if (buyNow) buyNow.addEventListener("click", function () {
-      if (addSelectedProduct()) window.location.assign("/checkout-preview.html");
+      if (addSelectedProduct()) window.location.assign("/cart.html");
     });
   }
 
@@ -269,7 +269,11 @@
   }
 
   /* ---------- Order form (Netlify Forms) ---------- */
-  function showOrderSuccess() {
+  function showOrderSuccess(ref, summary) {
+    var refOut = document.getElementById("order-ref-out");
+    if (refOut) refOut.textContent = ref;
+    var sumOut = document.getElementById("order-summary-out");
+    if (sumOut) sumOut.textContent = summary;
     saveCart([]);
     var box = document.getElementById("cart-items");
     if (box) box.innerHTML = "";
@@ -296,13 +300,34 @@
       var subtotal = cart.reduce(function (s, i) { return s + byId[i.id].price * i.qty; }, 0);
       lines.push("Subtotal: " + money(subtotal) + " (shipping confirmed before payment)");
       document.getElementById("order-lines").value = lines.join("\n");
+      var fd = new FormData(form);
+      var ref = "HB-" + new Date().toISOString().slice(0, 10).replace(/-/g, "") + "-" + Math.random().toString(36).slice(2, 6).toUpperCase();
+      var payer = document.getElementById("payer-address");
+      var summaryLines = [
+        "HOODBTC SHOP — ORDER " + ref,
+        "Date: " + new Date().toISOString(),
+        "Items:"
+      ].concat(lines.slice(0, -1)).concat([
+        "Items subtotal (USD): " + money(subtotal),
+        "Shipping: confirmed by email before payment",
+        "Buyer: " + (fd.get("name") || ""),
+        "Email: " + (fd.get("email") || ""),
+        "Phone: " + (fd.get("phone") || "—"),
+        "Ship to: " + [fd.get("address"), fd.get("city"), fd.get("region"), fd.get("postal"), fd.get("country")].filter(Boolean).join(", "),
+        "Payment choice: " + (fd.get("payment") || ""),
+        "Payer wallet: " + (payer && payer.value ? payer.value : "Not connected"),
+        "Notes: " + (fd.get("notes") || "—")
+      ]);
+      var summary = summaryLines.join("\n");
+      document.getElementById("order-ref").value = ref;
+      document.getElementById("order-summary").value = summary;
       var message = document.getElementById("order-status");
       var button = form.querySelector('button[type="submit"]');
       var controls = document.querySelectorAll('#cart-items button');
       submitting = true;
       button.disabled = true;
       controls.forEach(function (el) { el.disabled = true; });
-      message.textContent = "Sending your order request…";
+      message.textContent = "Sending your order…";
       try {
         var response = await fetch("/", {
           method: "POST",
@@ -311,7 +336,7 @@
         });
         if (!response.ok) throw new Error("Order request rejected");
         // Never accept a URL flag or a marker set before the server responds.
-        showOrderSuccess();
+        showOrderSuccess(ref, summary);
       } catch (error) {
         message.textContent = "We could not confirm your request. Your cart is saved. Please try again, or contact contact@hoodbtc.com before resubmitting if your connection was interrupted.";
       } finally {
