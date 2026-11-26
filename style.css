@@ -163,6 +163,8 @@ main { flex: 1; width: 100%; }
   border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; font: inherit;
 }
 .added-note { margin-top: 12px; color: var(--green2); }
+.returns-note { margin-top: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; color: var(--muted); font-size: 14px; }
+.duty-note { margin-top: 10px; color: var(--muted); font-size: 13px; }
 
 /* ---------- Cart ---------- */
 
