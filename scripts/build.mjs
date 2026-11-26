@@ -38,7 +38,10 @@ for (const f of await readdir(root)) {
   if ((/\.(html|js|css|png|txt|ico)$/.test(f) || f === '_headers') && f !== 'guides.js') await cp(resolve(root,f),resolve(out,f));
 }
 await cp(resolve(root,'assets'),resolve(out,'assets'),{recursive:true});
-await cp(resolve(root,'payment'),resolve(out,'payment'),{recursive:true,filter: p => !p.endsWith('.test.mjs')});
+// payment/ is internal server-side code only: netlify/functions/verify-usdc.mjs
+// imports it from the repo tree (netlify.toml functions dir), never from dist.
+// It must NOT be copied into the published site.
+
 const template = await readFile(resolve(root,'product.html'),'utf8');
 for (const p of catalog.products) {
   const title = p.name + ' — HOODBTC Shop';
