@@ -4,7 +4,7 @@
    and a client-side cart in localStorage. Ordering is manual:
    the cart page carries a Netlify Forms order form — no payment
    is taken on the site. Peter confirms availability and
-   shipping, then sends payment details (crypto / Interac).
+   shipping, then sends payment details (crypto).
    ============================================================ */
 (function () {
   "use strict";
