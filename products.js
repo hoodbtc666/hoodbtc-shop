@@ -17,10 +17,6 @@
    maker's own words, retold in HOODBTC's voice — clean, direct,
    no hype. Sourced from each maker's official product page.
 
-   Prices are HOODBTC selling prices: the official list price
-   plus 20% (Peter's margin, set 2026-11-14). Peter sources
-   each item from the official store after the order and ships it.
-
    Product shape:
    {
      id: "dimo-macaron",               // unique, used in ?id=
