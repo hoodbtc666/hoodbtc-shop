@@ -204,6 +204,23 @@
       descEl.insertAdjacentElement("afterend", info);
       descEl.hidden = true;
     }
+    // Maker return restrictions (products.js returnsNote) belong at the point
+    // of sale, not only in the Returns policy. Statically built product pages
+    // already carry the note with this id (scripts/build.mjs) — never duplicate.
+    var addedNote = document.getElementById("p-added");
+    if (p.returnsNote && addedNote && !document.getElementById("p-returns-note")) {
+      var returnsNote = document.createElement("p");
+      returnsNote.id = "p-returns-note";
+      returnsNote.className = "returns-note";
+      returnsNote.setAttribute("role", "note");
+      returnsNote.textContent = p.returnsNote + " ";
+      var returnsLink = document.createElement("a");
+      returnsLink.href = "/returns.html";
+      returnsLink.textContent = "Returns & Refunds";
+      returnsNote.appendChild(returnsLink);
+      returnsNote.appendChild(document.createTextNode("."));
+      addedNote.insertAdjacentElement("afterend", returnsNote);
+    }
     var sel = document.getElementById("p-variant");
     var variants = (p.variants && p.variants.length ? p.variants : ["Standard"]);
     sel.replaceChildren();
