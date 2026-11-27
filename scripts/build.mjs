@@ -60,7 +60,7 @@ for (const p of catalog.products) {
     .replace(/(<p class="product-desc" id="p-desc">).*?(<\/p>)/,`$1${escape(p.description)}$2`)
     .replace(/<select id="p-variant">.*?<\/select>/,`<select id="p-variant">${(p.variants||['Standard']).map(v=>`<option>${escape(v)}</option>`).join('')}</select>`);
   const graph = {'@context':'https://schema.org','@graph':[
-    {'@type':'Product','@id':url+'#product',name:p.name,brand:{'@type':'Brand',name:brandOf(p.id)},description:p.description,image:[origin+'/'+p.image],url,sku:p.id,offers:{'@type':'Offer',url,priceCurrency:'USD',price:p.price.toFixed(2),availability:'https://schema.org/InStock',seller:{'@type':'Organization',name:'HOODBTC Shop',url:origin+'/'}}},
+    {'@type':'Product','@id':url+'#product',name:p.name,brand:{'@type':'Brand',name:brandOf(p.id)},description:p.description,image:[origin+'/'+p.image],url,sku:p.id,offers:{'@type':'Offer',url,priceCurrency:'USD',price:p.price.toFixed(2),seller:{'@type':'Organization',name:'HOODBTC Shop',url:origin+'/'}}},
     {'@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'HOODBTC Shop',item:origin+'/'},{'@type':'ListItem',position:2,name:col?.name||'Products',item:origin+'/'+p.collection+'.html'},{'@type':'ListItem',position:3,name:p.name,item:url}]}
   ]};
   html = html.replace('</head>',`<script id="product-jsonld" type="application/ld+json">${JSON.stringify(graph).replace(/</g,'\\u003c')}</script>\n</head>`);
