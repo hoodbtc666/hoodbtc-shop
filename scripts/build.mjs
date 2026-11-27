@@ -38,7 +38,10 @@ for (const f of await readdir(root)) {
   if ((/\.(html|js|css|png|txt|ico)$/.test(f) || f === '_headers') && f !== 'guides.js') await cp(resolve(root,f),resolve(out,f));
 }
 await cp(resolve(root,'assets'),resolve(out,'assets'),{recursive:true});
-await cp(resolve(root,'payment'),resolve(out,'payment'),{recursive:true,filter: p => !p.endsWith('.test.mjs')});
+// payment/ is internal server-side code only: netlify/functions/verify-usdc.mjs
+// imports it from the repo tree (netlify.toml functions dir), never from dist.
+// It must NOT be copied into the published site.
+
 const template = await readFile(resolve(root,'product.html'),'utf8');
 for (const p of catalog.products) {
   const title = p.name + ' — HOODBTC Shop';
@@ -63,6 +66,10 @@ for (const p of catalog.products) {
   html = html.replace('</head>',`<script id="product-jsonld" type="application/ld+json">${JSON.stringify(graph).replace(/</g,'\\u003c')}</script>\n</head>`);
   const guide = guides[p.id];
   if (guide) html = html.replace('<div id="product-missing"', guideHtml(guide) + '\n      <div id="product-missing"');
+  // Maker return restrictions are stated on the product page itself, under the
+  // buy actions — the same note shop.js renders on the dynamic product page
+  // (same id there, so the client script never duplicates it).
+  if (p.returnsNote) html = html.replace(/(<p class="added-note" id="p-added"[^>]*>[\s\S]*?<\/p>)/, `$1\n          <p class="returns-note" id="p-returns-note" role="note">${escape(p.returnsNote)} <a href="/returns.html">Returns &amp; Refunds</a>.</p>`);
   await mkdir(resolve(out,'products',p.id),{recursive:true});
   await writeFile(resolve(out,'products',p.id,'index.html'),html);
 }
