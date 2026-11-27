@@ -2,18 +2,135 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Checkout has moved — HOODBTC Shop</title>
-  <meta name="robots" content="noindex">
-  <meta http-equiv="refresh" content="0; url=/cart.html">
-  <link rel="canonical" href="https://shop.hoodbtc.com/cart.html">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>USDC Checkout Preview — HOODBTC Shop</title>
+  <meta name="description" content="Your cart at the HOODBTC Shop.">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#020607">
+  <link rel="canonical" href="https://shop.hoodbtc.com/checkout-preview.html">
+  <meta property="og:title" content="USDC Checkout Preview — HOODBTC Shop">
+  <meta property="og:description" content="Your cart at the HOODBTC Shop.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="HOODBTC Shop">
+  <meta property="og:url" content="https://shop.hoodbtc.com/checkout-preview.html">
+  <meta property="og:image" content="https://shop.hoodbtc.com/og-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="USDC Checkout Preview — HOODBTC Shop">
+  <meta name="twitter:description" content="Your cart at the HOODBTC Shop.">
+  <meta name="twitter:image" content="https://shop.hoodbtc.com/og-card.png">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="checkout-ux.css">
 </head>
 <body>
-  <!-- Retired 2026-11-25: the USDC checkout preview never took live
-       payments. Ordering is open (Peter's ruling, 2026-11-25) and the
-       real order flow is the order form on the cart page. The on-site USDC
-       checkout itself stays behind docs/usdc-checkout-launch-gate.md. -->
-  <p>Ordering is open on the cart page: <a href="/cart.html">go to your cart to place your order</a>.</p>
-  <script>window.location.replace("/cart.html");</script>
+  <!-- Living water: same file and same no-controls rule as every HOODBTC product.
+       Autoplay + muted + loop + playsinline; it never stops while the page is visible. -->
+  <video id="night-water-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+    <source src="assets/hoodbtc-water-loop.mp4" type="video/mp4">
+  </video>
+  <div class="water-shade" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html" aria-label="HOODBTC Shop — home">
+        <img class="brand-glyph" src="assets/hoodbtc-h-256.webp" alt="HOODBTC">
+        <span class="brand-text">
+          <span class="brand-name">HOODBTC</span>
+          <span class="brand-sub">SHOP</span>
+        </span>
+      </a>
+      <nav class="links" aria-label="Primary">
+        <a href="latest-devices.html">Latest Devices</a>
+        <a href="vehicle-auto.html">Vehicle &amp; Auto</a>
+        <a href="connectivity.html">Connectivity &amp; eSIM</a>
+        <a href="hotspots.html">Hotspots</a>
+      </nav>
+      <a class="cart-link" href="cart.html" aria-label="Cart">Cart <span class="cart-count" data-cart-count>0</span></a>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-head">
+      <p class="kicker">HOODBTC Shop</p>
+      <h1>Checkout, made simple.</h1><p class="sum-note">Three clear steps. No payment in preview.</p><div class="checkout-progress" aria-label="Checkout progress"><span data-step-label="1" class="active">01 · Cart</span><span data-step-label="2">02 · Delivery</span><span data-step-label="3">03 · Wallet</span></div>
+    </section>
+    <section class="section cart-wrap">
+      <div id="cart-items" class="cart-items"></div><div class="checkout-actions"><button type="button" class="btn-capsule" id="next-cart">Continue to delivery →</button></div>
+      <div id="cart-empty" class="glass empty-state" hidden>
+        <h2>Your cart is empty</h2>
+        <p>Gear you add will wait for you here.</p>
+        <a class="text-link" href="index.html">&larr; Browse collections</a>
+      </div>
+      <aside id="cart-summary" class="glass cart-summary" hidden>
+        <h2>Checkout — Base USDC</h2>
+        <p class="sum-note"><strong>PREVIEW ONLY — payments disabled.</strong> This page does not send transactions or submit personal information. Final shipping and taxes must be confirmed before a real payment.</p>
+        <div class="sum-row"><span>Items subtotal (USD)</span><strong id="sum-subtotal">$0.00</strong></div>
+        <div class="sum-row"><span>Shipping &amp; taxes</span><span>Not calculated yet</span></div>
+        <div class="sum-row total"><span>Estimated USDC (items only)</span><strong id="sum-total">$0.00</strong></div>
+        <form id="preview-form" class="order-form" autocomplete="on"><div id="delivery-step">
+          <h3 class="form-title">Shipping details</h3>
+          <label class="field"><span>Full name *</span><input type="text" name="name" required autocomplete="name"></label>
+          <label class="field"><span>Email *</span><input type="email" name="email" required autocomplete="email"></label>
+          <label class="field"><span>Phone</span><input type="tel" name="phone" autocomplete="tel"></label>
+          <label class="field"><span>Street address *</span><input type="text" name="address" required autocomplete="street-address"></label>
+          <label class="field"><span>City *</span><input type="text" name="city" required autocomplete="address-level2"></label>
+          <label class="field"><span>Province / State *</span><input type="text" name="region" required autocomplete="address-level1"></label>
+          <label class="field"><span>Postal code *</span><input type="text" name="postal" required autocomplete="postal-code"></label>
+          <label class="field"><span>Country *</span><input type="text" name="country" required autocomplete="country-name"></label>
+          <div class="checkout-actions"><button type="button" id="back-cart" class="checkout-secondary">← Back to cart</button><button type="button" id="next-delivery" class="btn-capsule">Review wallet payment →</button></div></div><div id="wallet-step" hidden><h3 class="form-title">Wallet payment</h3>
+          <p class="sum-note">Network: Base Mainnet (8453). Currency: native USDC. Never enter a seed phrase or private key.</p>
+          <button class="btn-capsule" id="connect-wallet" type="button">Connect wallet</button>
+          <p class="sum-note" id="wallet-status" role="status" aria-live="polite">Not connected</p>
+          <label class="field"><span>Paying wallet (read-only)</span><input id="payer-address" type="text" readonly placeholder="Connect wallet to show address"></label>
+          <label class="field"><span>HOODBTC Shop receiving wallet</span><input type="text" readonly value="0x4aa9ddbfec99cfae272acc0d07230f925d4540de"></label>
+          <button class="btn-capsule" type="button" id="complete-demo">Complete demo checkout — no payment</button>
+          <p class="sum-note">Preview only: no transaction or order submission. Live checkout requires final shipping and taxes, payment verification and secure order notifications.</p><button type="button" class="checkout-secondary" id="back-delivery">← Edit delivery details</button></div>
+        </form>
+      </aside>
+      <section id="demo-complete" class="glass empty-state" hidden aria-live="polite">
+        <p class="kicker">HOODBTC SHOP · DEMO</p>
+        <h2>Demo checkout complete</h2>
+        <p>This is a simulation. No payment was sent, no order was placed, and no personal information was submitted.</p>
+        <p id="demo-items-summary" class="sum-note"></p>
+        <p><strong>Payment:</strong> Not charged · <strong>Order status:</strong> Demo only</p>
+        <div class="checkout-actions"><button type="button" id="restart-demo" class="checkout-secondary">← Edit demo checkout</button><a class="btn-capsule" href="index.html">Back to shop</a></div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img class="brand-glyph small" src="assets/hoodbtc-h-256.webp" alt="HOODBTC">
+        <div>
+          <p class="footer-name">HOODBTC SHOP</p>
+          <p class="footer-note">Part of the HOODBTC ecosystem. Build. Trade. Own.</p>
+        </div>
+      </div>
+      <nav class="footer-links" aria-label="HOODBTC ecosystem">
+        <a href="https://hoodbtc.com">HOODBTC</a>
+        <a href="https://trade.hoodbtc.com">Trade</a>
+        <a href="https://tokenfactory.hoodbtc.com">Token Factory</a>
+        <a href="https://games.hoodbtc.com">Games</a>
+      </nav>
+      <nav class="footer-links" aria-label="Shop policies">
+        <a href="terms.html">Terms</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="shipping.html">Shipping</a>
+        <a href="returns.html">Returns</a>
+      </nav>
+      <p class="footer-contact">Questions about an order? <a href="mailto:contact@hoodbtc.com">contact@hoodbtc.com</a></p>
+      <p class="footer-legal">&copy; HOODBTC. All prices in USD. Shipping confirmed per order before you pay.</p>
+    </div>
+  </footer>
+  <script src="products.js"></script>
+  <script src="shop.js"></script>
+  <script src="checkout-preview.js"></script>
+  <script type="module" src="wallet-reown.js"></script>
 </body>
 </html>
