@@ -302,3 +302,16 @@ img,video{max-width:100%}
 @media(prefers-reduced-motion:reduce){
  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+
+/* HOODBTC unified product switcher — one app, five products (2026-11-26).
+   Slim strip under the existing header; current product neon green #35e87f
+   with dot + underline, the rest muted. Not sticky, not a bottom bar. */
+.hb-apps{position:relative;z-index:1;display:flex;align-items:stretch;gap:2px;background:rgba(2,10,6,.88);border-top:1px solid rgba(53,232,127,.16);border-bottom:1px solid rgba(53,232,127,.28);padding:0 10px;height:42px}
+.hb-apps-home{display:flex;align-items:center;padding-right:8px;margin-right:2px;border-right:1px solid rgba(53,232,127,.14)}
+.hb-apps-home img{width:20px;height:20px;object-fit:contain;opacity:.95}
+.hb-apps a:not(.hb-apps-home),.hb-apps .hb-apps-current{position:relative;flex:1;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#9fb3ab;font-size:10.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;white-space:nowrap}
+.hb-apps .hb-apps-current{color:#35e87f}
+.hb-apps .hb-apps-current::after{content:'';position:absolute;left:14%;right:14%;bottom:0;height:2px;background:#35e87f;border-radius:2px;box-shadow:0 0 10px rgba(53,232,127,.8)}
+.hb-apps .hb-apps-dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:#35e87f;margin-right:5px;box-shadow:0 0 6px #35e87f}
+.hb-apps a:not(.hb-apps-home):hover{color:#35e87f}
