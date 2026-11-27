@@ -1,10 +1,13 @@
 /* ============================================================
    HOODBTC Shop — storefront logic
    Catalog rendering (from products.js), product detail page,
-   and a client-side cart in localStorage. Ordering is manual:
-   the cart page carries a Netlify Forms order form — no payment
-   is taken on the site. Peter confirms availability and
-   shipping, then sends payment details (crypto).
+   and a client-side cart in localStorage. Ordering is
+   pay-at-order: the buyer sends the cart total in USDC to the
+   HOODBTC wallet first, then submits the Netlify Forms order
+   form on the cart page with their payer wallet address and
+   payment transaction hash. Peter verifies the payment
+   on-chain, then prepares and ships. Shipping is included in
+   the price (free shipping).
    ============================================================ */
 (function () {
   "use strict";
@@ -130,8 +133,8 @@
     var canon = document.querySelector('link[rel="canonical"]');
     if (canon) canon.setAttribute("href", pageUrl);
     // SEO: source all structured data from the same catalog used by the storefront.
-    // Availability is declared InStock: every listed product is orderable; availability and
-    // shipping are confirmed by email before any payment (manual-order model).
+    // Availability is declared InStock: every listed product is orderable, and the
+    // displayed price is the total the buyer pays when ordering (shipping included).
     var productImageUrl = new URL(p.image, "https://shop.hoodbtc.com/").href;
     setMeta('meta[property="og:image"]', productImageUrl);
     setMeta('meta[name="twitter:image"]', productImageUrl);
@@ -197,7 +200,7 @@
       explanation.textContent = p.description;
       var reminder = document.createElement("p");
       reminder.className = "product-disclaimer";
-      reminder.textContent = "Check device compatibility, network and regional requirements before ordering. Availability and final shipping costs are confirmed before payment.";
+      reminder.textContent = "Check device compatibility, network and regional requirements before ordering. The price you see is the total you pay when you order \u2014 shipping is free, included in the price.";
       info.appendChild(heading);
       info.appendChild(explanation);
       info.appendChild(reminder);
@@ -273,6 +276,8 @@
     var subtotal = cart.reduce(function (s, i) { return s + byId[i.id].price * i.qty; }, 0);
     document.getElementById("sum-subtotal").textContent = money(subtotal);
     document.getElementById("sum-total").textContent = money(subtotal);
+    var payTotal = document.getElementById("pay-total");
+    if (payTotal) payTotal.textContent = money(subtotal);
     box.querySelectorAll("button[data-act]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var c = loadCart(); var idx = +btn.getAttribute("data-idx"); var act = btn.getAttribute("data-act");
@@ -315,7 +320,7 @@
         return i.qty + " x " + p.name + (i.variant === "Standard" ? "" : " (" + i.variant + ")") + " — " + money(p.price * i.qty);
       });
       var subtotal = cart.reduce(function (s, i) { return s + byId[i.id].price * i.qty; }, 0);
-      lines.push("Subtotal: " + money(subtotal) + " (shipping confirmed before payment)");
+      lines.push("Total: " + money(subtotal) + " (shipping FREE \u2014 included in the price)");
       document.getElementById("order-lines").value = lines.join("\n");
       var fd = new FormData(form);
       var ref = "HB-" + new Date().toISOString().slice(0, 10).replace(/-/g, "") + "-" + Math.random().toString(36).slice(2, 6).toUpperCase();
@@ -325,14 +330,15 @@
         "Date: " + new Date().toISOString(),
         "Items:"
       ].concat(lines.slice(0, -1)).concat([
-        "Items subtotal (USD): " + money(subtotal),
-        "Shipping: confirmed by email before payment",
+        "Total (USD): " + money(subtotal),
+        "Shipping: FREE \u2014 included in the price",
         "Buyer: " + (fd.get("name") || ""),
         "Email: " + (fd.get("email") || ""),
         "Phone: " + (fd.get("phone") || "—"),
         "Ship to: " + [fd.get("address"), fd.get("city"), fd.get("region"), fd.get("postal"), fd.get("country")].filter(Boolean).join(", "),
         "Payment choice: " + (fd.get("payment") || ""),
-        "Payer wallet: " + (payer && payer.value ? payer.value : "Not connected"),
+        "Payer wallet: " + (fd.get("payer_wallet") || (payer && payer.value ? payer.value : "Not connected")),
+        "Payment transaction: " + (fd.get("payment_tx") || ""),
         "Notes: " + (fd.get("notes") || "—")
       ]);
       var summary = summaryLines.join("\n");
