@@ -349,3 +349,26 @@ a, button { -webkit-tap-highlight-color: transparent; }
 /* Order confirmation (cart page): the buyer's copy of the order summary. */
 .order-summary-box{white-space:pre-wrap;text-align:left;font-size:.95rem;line-height:1.5;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:16px auto;max-width:560px;color:var(--text)}
 .wallet-address{word-break:break-all;color:var(--green2)}
+
+/* ---------- Product trust blocks (concierge / timeline / guarantee) ---------- */
+
+.trust-block {
+  margin-top: 22px;
+  padding: 18px 20px;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  text-align: left;
+}
+.trust-title { font-family: var(--serif); font-size: 22px; font-weight: 600; line-height: 1.2; margin-bottom: 8px; }
+.trust-block p, .trust-block li { color: var(--muted); font-size: 14.5px; }
+.trust-block strong { color: var(--text); }
+.trust-steps, .trust-list { margin: 6px 0 0 18px; display: grid; gap: 6px; }
+.trust-note { margin-top: 10px; }
+.terms-placeholder {
+  border: 1px dashed var(--green2);
+  border-radius: 6px;
+  padding: 0 5px;
+  color: var(--green2);
+  font-size: 13px;
+}
